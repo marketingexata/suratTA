@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><title>Surat Pengganti Buku Nenkin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{--bg:#f5f7ff;--cd:#fff;--tx:#1c2140;--mu:#6a7094;--ac:#5b5cf0;--a2:#14b8a6;--bd:#e2e6f5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12142a;--cd:#1c1f3b;--tx:#eceefe;--mu:#9aa0c8;--bd:#2d3160}}
+:root[data-theme="dark"]{--bg:#12142a;--cd:#1c1f3b;--tx:#eceefe;--mu:#9aa0c8;--bd:#2d3160}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:22px 16px 6px;max-width:1300px;margin:auto}
+h1{margin:0;font-size:24px;background:linear-gradient(90deg,var(--ac),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{margin:2px 0 0;color:var(--mu);font-size:14px}
+.wrap{display:grid;grid-template-columns:340px 1fr;gap:18px;padding:16px;max-width:1300px;margin:auto}
+@media(max-width:860px){.wrap{grid-template-columns:1fr}}
+aside{position:sticky;top:12px;align-self:start}@media(max-width:860px){aside{position:static}}
+.cd{background:var(--cd);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:12px;animation:up .5s both}
+.cd h3{margin:0 0 6px;font-size:15px;display:flex;align-items:center}
+.n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--a2));color:#fff;font-size:13px;margin-right:8px}
+.hint{color:var(--mu);font-size:12.5px;margin:4px 0 8px}
+.bt{border:0;border-radius:10px;padding:9px 13px;font:inherit;font-weight:600;cursor:pointer;background:var(--ac);color:#fff;transition:.2s}
+.bt:hover{transform:translateY(-2px);box-shadow:0 6px 16px #5b5cf055}.bt.g{background:var(--bd);color:var(--tx)}.bt:disabled{opacity:.4;pointer-events:none}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:7px 9px}
+fieldset{border:0;padding:0;margin:0}fieldset:disabled{opacity:.45}
+.pw{margin:0 auto 22px;animation:pop .45s both}.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;color:var(--mu);font-size:13px}
+.ph button{border:0;background:none;color:#e11d48;cursor:pointer;font:inherit}
+.ps{margin:auto;box-shadow:0 10px 30px #1c214035;border-radius:4px;overflow:hidden;background:#fff}
+.pg{width:794px;height:1123px;position:relative;transform-origin:0 0;background:#fff;color:#000}
+.it{position:absolute;display:flex;line-height:1.15;padding:1px 4px;user-select:none}
+.tx{width:100%;white-space:pre-wrap;outline:0}.tx[contenteditable=true]{user-select:text;cursor:text}
+.ed .it{outline:1px dashed #5b5cf0;cursor:move;touch-action:none}.ed .it.sel{outline:2px solid #5b5cf0;background:#5b5cf014}
+.rs{display:none;position:absolute;right:-6px;bottom:-6px;width:11px;height:11px;background:#5b5cf0;border-radius:3px;cursor:nwse-resize}.ed .sel .rs{display:block}
+.gx,.gy{position:absolute;background:#f43f5e;display:none;pointer-events:none}.gx{top:0;bottom:0;width:1px}.gy{left:0;right:0;height:1px}
+.ov{position:fixed;inset:0;display:none;place-items:center;background:#0b0e2299;z-index:50;padding:16px}.ov.on{display:grid;animation:fade .25s}
+#ld{z-index:60;background:#0b0e22cc;color:#fff}.ld{text-align:center}.ld svg{width:130px;height:130px;transform:rotate(-90deg)}
+.ld circle{fill:none;stroke-width:8;stroke-linecap:round}#lc{stroke:#7c7dff;stroke-dasharray:251.3;stroke-dashoffset:251.3;transition:stroke-dashoffset .3s}
+#lp{font-size:26px;font-weight:700;margin-top:-84px;height:84px}
+.md{width:min(580px,100%);background:var(--cd);border-radius:18px;padding:18px;animation:pop .35s}
+.md textarea{width:100%;height:250px;resize:vertical}
+@keyframes up{from{opacity:0;transform:translateY(12px)}}@keyframes pop{from{opacity:0;transform:scale(.97)}}@keyframes fade{from{opacity:0}}
+</style></head><body>
+<header><h1>Surat Pengganti Buku Nenkin</h1><p>Tempel pesan WhatsApp → otomatis jadi surat siap unduh. Data tersimpan otomatis di perangkat ini.</p></header>
+<div class="wrap">
+<aside>
+ <div class="cd"><h3><span class="n">1</span>Tempel pesan WA</h3><p class="hint">Setiap kaisha (perusahaan) jadi 1 halaman. Maksimal 5.</p>
+  <div class="row"><button class="bt" id="add" title="Tempel pesan WhatsApp berikutnya">+ Kaisha <span id="cnt">(0/5)</span></button>
+  <button class="bt g" id="ld0" title="Buka file .json hasil unduhan sebelumnya">Muat sesi</button><input type="file" id="fj" accept=".json" hidden></div></div>
+ <div class="cd"><h3><span class="n">2</span>Rapikan di preview</h3>
+  <p class="hint">Klik teks untuk memilih, seret untuk menggeser (otomatis menempel ke garis template), tarik titik biru untuk ukuran, klik dua kali untuk mengetik. Klik area kosong untuk melihat preview bersih.</p>
+  <fieldset id="tb" disabled><div class="row"><select id="tf" title="Jenis font"><option value="t">Times New Roman</option><option value="a">Arial</option><option value="m">Mincho (Jepang)</option></select>
+  <input id="tz" type="number" min="5" max="60" step=".5" style="width:70px" title="Ukuran font (pt)"><input id="tc" type="color" title="Warna teks" style="padding:2px;width:42px">
+  <button class="bt g" id="bb" title="Tebal"><b>B</b></button><select id="ta" title="Rata teks"><option value="l">Kiri</option><option value="c">Tengah</option><option value="r">Kanan</option></select></div></fieldset></div>
+ <div class="cd"><h3><span class="n">3</span>Unduh</h3><p class="hint">Setiap unduhan otomatis ikut menyimpan file .json (data sesi).</p>
+  <input id="fn" placeholder="Nama file" style="width:100%;margin-bottom:8px">
+  <div class="row"><button class="bt" data-x="doc" title="Format Word">Word</button><button class="bt" data-x="jpg" title="Gambar JPG per halaman">JPG</button><button class="bt" data-x="pdf" title="PDF semua halaman">PDF</button><button class="bt g" id="sj" title="Simpan data sesi saja">Simpan progres</button></div>
+  <p class="hint" id="sv">&nbsp;</p></div>
+</aside>
+<section id="prev"></section>
+</div>
+<div class="ov" id="md"><div class="md"><h3 style="margin-top:0">Tempel pesan WhatsApp mentah</h3>
+ <p class="hint">Salin pesan “SURAT PENGGANTI BUKU NENKIN” dari WhatsApp lalu tempel di sini. Bidang kerja dan cara pembayaran tidak dipakai karena tidak ada di template.</p>
+ <textarea id="raw" placeholder="SURAT PENGGANTI BUKU NENKIN&#10;1. Nama Lengkap : ..."></textarea>
+ <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="bt g" id="cn">Batal</button><button class="bt" id="mk">Buat halaman</button></div></div></div>
+<div class="ov" id="ld"><div class="ld"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" stroke="#ffffff30"/><circle id="lc" cx="50" cy="50" r="40"/></svg><div id="lp">0%</div><div id="lt"></div></div></div>
+<script>
+const $=s=>document.querySelector(s),W=794,H=1123,K='nenkin_v1',sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const F={t:"'Times New Roman','Noto Serif JP','MS Mincho',serif",a:"Arial,'Noto Sans JP',sans-serif",m:"'Noto Serif JP','MS Mincho',serif"},FN={t:'Times New Roman',a:'Arial',m:'MS Mincho'};
+let S={pages:[]},sel=null,sc=1,edit=true,tm,dr=null,lw=0;
+const T=()=>sel&&S.pages[sel.p]&&S.pages[sel.p].items[sel.i];
+async function busy(txt,fn){const o=$('#ld');o.classList.add('on');$('#lt').textContent=txt;
+ const set=p=>{$('#lp').textContent=p+'%';$('#lc').style.strokeDashoffset=251.3*(1-p/100);return sleep(40)};
+ try{await set(0);await fn(set)}catch(e){alert('Maaf, terjadi kendala: '+e.message)}finally{await set(100);await sleep(200);o.classList.remove('on')}}
+function parse(r){
+ r=r.replace(/[\u2060\u200b\u200e\u200f\u00a0]/g,' ');
+ const g=re=>{const m=r.match(re);return m?m[1].trim():''},p=n=>String(n).padStart(2,'0');
+ const lm=r.match(/tgl lahir\s*:\s*(\d{1,2})\D+(\d{1,2})\D+(\d{4})/i);
+ let pn=g(/Nama Perusahaan\s*:[ \t]*(.*)/i),kj='',rj=pn;const m=pn.match(/^(.*?)\s*[（(](.+?)[）)]\s*$/);
+ if(m){if(/[\u3000-\u9fff]/.test(m[1])){kj=m[1];rj=m[2]}else{rj=m[1]}}
+ let ad=(r.match(/Alamat Perusahaan\s*:([\s\S]*?)(?:\n[^\n]*No\s*tlf|$)/i)||[,''])[1];
+ const zr=/〒\s*\d{3}-?\d{4}/,z=(ad.match(zr)||[''])[0].replace(/\s/g,'');
+ ad=ad.replace(zr,'').replace(/\s*\n\s*/g,' ').trim().toUpperCase();
+ const w=r.match(/tgl\s*:\s*(\d+)\s*bln\s*:\s*(\d+)\s*th\s*:\s*(\d{4})\s*sampai\s*tgl\s*:\s*(\d+)\s*bln\s*:\s*(\d+)\s*th\s*:\s*(\d{4})/i);
+ return{nen:g(/NENKIN JIKA TAU\s*:[ \t]*([\d\- ]*)/i),nama:g(/Nama Lengkap\s*:[ \t]*(.*)/i).toUpperCase(),
+  lahir:lm?`${lm[3]} 年 ${p(lm[2])} 月 ${p(lm[1])} 日`:'',alamat:g(/alamat apato\s*:[ \t]*(.*)/i).toUpperCase(),
+  pn:rj.trim().toUpperCase()+(kj?'\n'+kj:''),ad:ad+(z?'\n'+z:''),tel:g(/No\s*tlf perusahaan\s*:[ \t]*(.*)/i),
+  masa:w?`${w[3]} 年 ${p(w[2])} 月 ${p(w[1])} 日 – ${w[6]} 年 ${p(w[5])} 月 ${p(w[4])} 日`:''}}
+function build(d){const I=[],a=(k,x,y,w,h,s,o)=>I.push({k,x,y,w,h,ox:x,oy:y,s,f:'t',z:14,c:'#000000',b:0,al:'l',bd:0,m:0,...o});
+ a('jd',96,100,602,26,'Data Pemohon Bagi Yang Tidak Punya Buku Nenkin',{b:1,z:18.7,al:'c'});
+ a('jk',96,138,602,34,'履歴(公的年金制度加入経過）',{b:1,z:21.3,al:'c',f:'m'});
+ a('in',97,222,500,22,'できるだけくわしく、正確に記入してください。',{f:'m'});
+ const A=[['Nomor Nenkin\n基础年金番号',d.nen],['Nama\n 氏 名',d.nama],['Tanggal lahir\n 生年月日',d.lahir],['Alamat tinggal ketika di Jepang\n日本における最終居住地',d.alamat],['Tanggal kepulangan\n日本出国日','']],
+ ya=[257,293,329,365,419],ha=[36,36,36,54,36];
+ A.forEach((r,i)=>{a('l'+i,76,ya[i],226,ha[i]+1,r[0],{bd:1});a('v'+i,301,ya[i],466,ha[i]+1,r[1],{bd:1,m:1})});
+ a('k1',97,494,520,22,'Ketika di Jepang, bekerja diperusahaan        :');
+ a('k2',97,529,520,22,'履歴(公的年金制度加入経過）',{b:1,f:'m'});
+ a('k3',97,562,520,22,'*mohon ditulis semua nama perusahaan bila ada lebih dari Satu',{z:13});
+ const C=[['Nama Perusahaan\n所属会社名',d.pn],['Alamat Perusahaan\n所属会社居住地',d.ad],['Nomor Telepon\n同電話番号',d.tel],['Jangka waktu bekerja\n勤務期間または国民年金の加入期間',d.masa],['Jenis Nenkin\n加入していた年金制度の種別','']],
+ yc=[587,623,677,713,749],hc=[36,54,36,36,36];
+ C.forEach((r,i)=>{a('cl'+i,76,yc[i],240,hc[i]+1,r[0],{bd:1});a('cv'+i,315,yc[i],452,hc[i]+1,r[1],{bd:1,m:i==3})});
+ return I}
+function ap(d,t){const s=d.style;s.left=t.x+'px';s.top=t.y+'px';s.width=t.w+'px';s.height=t.h+'px';s.fontFamily=F[t.f];s.fontSize=t.z+'px';s.color=t.c;
+ s.fontWeight=t.b?700:400;s.textAlign={l:'left',c:'center',r:'right'}[t.al];s.border=t.bd?'1px solid #000':'0';s.alignItems=t.m?'center':'flex-start'}
+function el(t,p,i){const d=document.createElement('div');d.className='it';d.dataset.p=p;d.dataset.i=i;d.innerHTML='<span class="tx"></span><i class="rs"></i>';d.firstChild.textContent=t.s;ap(d,t);return d}
+function render(){const R=$('#prev');R.innerHTML='';sc=Math.min(1,(R.clientWidth-4)/W);lw=innerWidth;
+ S.pages.forEach((p,pi)=>{const w=document.createElement('div');w.className='pw';
+  w.innerHTML=`<div class="ph"><b>Halaman ${pi+1} · Kaisha ${pi+1}</b><button data-del="${pi}">Hapus</button></div><div class="ps" style="width:${W*sc}px;height:${H*sc}px"><div class="pg" style="transform:scale(${sc})"><i class="gx"></i><i class="gy"></i></div></div>`;
+  const pg=w.querySelector('.pg');p.items.forEach((t,i)=>pg.appendChild(el(t,pi,i)));R.appendChild(w)});
+ document.body.classList.toggle('ed',edit);sel=null;$('#tb').disabled=true;
+ $('#cnt').textContent=`(${S.pages.length}/5)`;$('#add').disabled=S.pages.length>=5;
+ document.querySelectorAll('[data-x]').forEach(b=>b.disabled=!S.pages.length)}
+function save(){clearTimeout(tm);tm=setTimeout(()=>{try{localStorage.setItem(K,JSON.stringify({S,fn:$('#fn').value}));$('#sv').textContent='Tersimpan otomatis ✓'}catch(e){$('#sv').textContent='Penyimpanan otomatis tidak tersedia'}},300)}
+function pick(d){document.querySelectorAll('.it.sel').forEach(x=>x.classList.remove('sel'));if(!d){sel=null;$('#tb').disabled=true;return}
+ d.classList.add('sel');sel={p:+d.dataset.p,i:+d.dataset.i};const t=T();$('#tb').disabled=false;
+ $('#tf').value=t.f;$('#tz').value=+(t.z*.75).toFixed(1);$('#tc').value=t.c;$('#ta').value=t.al}
+function mod(fn){const t=T();if(!t)return;fn(t);const d=document.querySelector(`.it[data-p="${sel.p}"][data-i="${sel.i}"]`);ap(d,t);save()}
+$('#tf').onchange=e=>mod(t=>t.f=e.target.value);$('#tz').oninput=e=>mod(t=>t.z=Math.max(5,+e.target.value||10)*4/3);
+$('#tc').oninput=e=>mod(t=>t.c=e.target.value);$('#ta').onchange=e=>mod(t=>t.al=e.target.value);$('#bb').onclick=()=>mod(t=>t.b=t.b?0:1);
+function snap(t,x,y,pi){const X=[0,W/2,W,96,W-96,t.ox],Y=[0,H/2,H,96,H-96,t.oy];
+ S.pages[pi].items.forEach(o=>{if(o!==t){X.push(o.x,o.x+o.w,o.x+o.w/2);Y.push(o.y,o.y+o.h,o.y+o.h/2)}});
+ const best=(V,p,s)=>{let b=null;for(const v of V)for(const o of [0,s/2,s]){const d=v-(p+o);if(Math.abs(d)<=6&&(!b||Math.abs(d)<Math.abs(b.d)))b={d,v}}return b},bx=best(X,x,t.w),by=best(Y,y,t.h);
+ return[x+(bx?bx.d:0),y+(by?by.d:0),bx?bx.v:null,by?by.v:null]}
+document.addEventListener('pointerdown',e=>{const d=e.target.closest('.it');
+ if(!d){if(e.target.closest('#prev')){pick(null);edit=false;document.body.classList.remove('ed');document.activeElement&&document.activeElement.blur()}return}
+ if(e.target.isContentEditable)return;
+ edit=true;document.body.classList.add('ed');pick(d);const t=T();
+ dr={d,t,p:+d.dataset.p,m:e.target.classList.contains('rs')?'r':'m',sx:e.clientX,sy:e.clientY,ox:t.x,oy:t.y,ow:t.w,oh:t.h,pg:d.parentNode};e.preventDefault()});
+addEventListener('pointermove',e=>{if(!dr)return;const{t,d}=dr,dx=(e.clientX-dr.sx)/sc,dy=(e.clientY-dr.sy)/sc,gx=dr.pg.querySelector('.gx'),gy=dr.pg.querySelector('.gy');
+ if(dr.m=='r'){t.w=Math.max(24,Math.round(dr.ow+dx));t.h=Math.max(14,Math.round(dr.oh+dy))}
+ else{const r=snap(t,dr.ox+dx,dr.oy+dy,dr.p);t.x=Math.round(r[0]*10)/10;t.y=Math.round(r[1]*10)/10;
+  gx.style.display=r[2]==null?'none':'block';gx.style.left=r[2]+'px';gy.style.display=r[3]==null?'none':'block';gy.style.top=r[3]+'px'}
+ ap(d,t)});
+addEventListener('pointerup',()=>{if(!dr)return;dr.pg.querySelectorAll('.gx,.gy').forEach(g=>g.style.display='none');dr=null;save()});
+$('#prev').addEventListener('dblclick',e=>{const d=e.target.closest('.it');if(!d)return;const x=d.firstChild;x.contentEditable=true;x.focus();getSelection().selectAllChildren(x);
+ x.onblur=()=>{x.contentEditable=false;S.pages[d.dataset.p].items[d.dataset.i].s=x.innerText.replace(/\n$/,'');save()}});
+$('#prev').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b&&confirm('Hapus halaman ini?')){S.pages.splice(+b.dataset.del,1);render();save()}});
+$('#add').onclick=()=>$('#md').classList.add('on');$('#cn').onclick=()=>$('#md').classList.remove('on');
+$('#mk').onclick=async()=>{const r=$('#raw').value;if(r.trim().length<20){alert('Tempel dulu pesan WhatsApp-nya ya.');return}
+ $('#md').classList.remove('on');
+ await busy('Memproses pesan…',async set=>{await set(25);const d=parse(r);await set(55);S.pages.push({raw:r,items:build(d)});await set(80);render();await set(95);save()});
+ $('#raw').value='';setTimeout(()=>{const p=document.querySelectorAll('.pw');p[p.length-1]&&p[p.length-1].scrollIntoView({behavior:'smooth'})},100)};
+const dl=async(b,n)=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();a.remove();await sleep(400)};
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function docHtml(){const pt=v=>(v*.75).toFixed(1)+'pt';
+ let h='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>@page{size:595.3pt 841.9pt;margin:0}body{margin:0}.pgx{position:relative;width:595.3pt;height:841.9pt;page-break-after:always}</style></head><body>';
+ S.pages.forEach(p=>{h+='<div class="pgx">'+p.items.map(t=>{const ln=t.s.split('\n').length,pad=t.m?Math.max(0,(t.h-ln*t.z*1.15)/2)*.75:.75;
+  return`<div style="position:absolute;mso-position-horizontal-relative:page;mso-position-vertical-relative:page;left:${pt(t.x)};top:${pt(t.y)};width:${pt(t.w)};height:${pt(t.h)};border:${t.bd?'.75pt solid #000':'none'};padding:${pad.toFixed(1)}pt 3pt 0 3pt;font-family:'${FN[t.f]}';font-size:${pt(t.z)};color:${t.c};font-weight:${t.b?700:400};text-align:${{l:'left',c:'center',r:'right'}[t.al]};line-height:115%">${esc(t.s).replace(/\n/g,'<br>')}</div>`}).join('')+'</div>'});
+ return h+'</body></html>'}
+async function mkDocx(){const E=v=>Math.round(v*9525),tw=v=>Math.round(v*15),x=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');let id=1;
+ const box=t=>{const ln=t.s.split('\n'),sz=Math.round(t.z*1.5),fo=FN[t.f],n=id++,
+  ps=ln.map(l=>`<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="${tw(t.z*1.15)}" w:lineRule="exact"/><w:jc w:val="${{l:'left',c:'center',r:'right'}[t.al]}"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="${fo}" w:hAnsi="${fo}" w:eastAsia="MS Mincho" w:cs="${fo}"/>${t.b?'<w:b/>':''}<w:color w:val="${t.c.slice(1)}"/><w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/></w:rPr><w:t xml:space="preserve">${x(l)}</w:t></w:r></w:p>`).join('');
+  return`<w:r><w:drawing><wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="${n}" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="page"><wp:posOffset>${E(t.x)}</wp:posOffset></wp:positionH><wp:positionV relativeFrom="page"><wp:posOffset>${E(t.y)}</wp:posOffset></wp:positionV><wp:extent cx="${E(t.w)}" cy="${E(t.h)}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapNone/><wp:docPr id="${n}" name="Teks ${n}"/><wp:cNvGraphicFramePr/><a:graphic><a:graphicData uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"><wps:wsp><wps:cNvSpPr txBox="1"/><wps:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${E(t.w)}" cy="${E(t.h)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/>${t.bd?'<a:ln w="9525"><a:solidFill><a:srgbClr val="000000"/></a:solidFill></a:ln>':'<a:ln><a:noFill/></a:ln>'}</wps:spPr><wps:txbx><w:txbxContent>${ps}</w:txbxContent></wps:txbx><wps:bodyPr rot="0" vert="horz" wrap="square" lIns="38100" tIns="9525" rIns="38100" bIns="9525" anchor="${t.m?'ctr':'t'}" anchorCtr="0"><a:noAutofit/></wps:bodyPr></wps:wsp></a:graphicData></a:graphic></wp:anchor></w:drawing></w:r>`};
+ const body=S.pages.map((p,i)=>`<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr>${p.items.map(box).join('')}</w:p>`+(i<S.pages.length-1?'<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr><w:r><w:br w:type="page"/></w:r></w:p>':'')).join('');
+ const z=new JSZip(),R='http://schemas.openxmlformats.org/';
+ z.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="${R}package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`);
+ z.file('_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="${R}package/2006/relationships"><Relationship Id="rId1" Type="${R}officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+ z.file('word/document.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="${R}wordprocessingml/2006/main" xmlns:wp="${R}drawingml/2006/wordprocessingDrawing" xmlns:a="${R}drawingml/2006/main" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"><w:body>${body}<w:sectPr><w:pgSz w:w="11907" w:h="16839"/><w:pgMar w:top="0" w:right="0" w:bottom="0" w:left="0" w:header="0" w:footer="0" w:gutter="0"/></w:sectPr></w:body></w:document>`);
+ return z.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})}
+async function cap(i){await document.fonts.ready;const pg=document.querySelectorAll('.pg')[i],ps=pg.parentNode,tr=pg.style.transform,ov=ps.style.overflow;
+ pg.style.transform='none';ps.style.overflow='visible';
+ try{return await html2canvas(pg,{scale:2,backgroundColor:'#fff',width:W,height:H,scrollX:-scrollX,scrollY:-scrollY})}finally{pg.style.transform=tr;ps.style.overflow=ov}}
+async function exp(type){const fn=($('#fn').value.trim()||'Surat_Nenkin').replace(/[\\/:*?"<>|]/g,'_');
+ const was=edit;document.body.classList.remove('ed');pick(null);
+ await busy('Menyiapkan '+type.toUpperCase()+'…',async set=>{
+  if(type=='doc'){await set(40);await dl(await mkDocx(),fn+'.docx')}
+  else{const cs=[];for(let i=0;i<S.pages.length;i++){cs.push(await cap(i));await set(Math.round(70*(i+1)/S.pages.length))}
+   if(type=='jpg')for(let i=0;i<cs.length;i++)await dl(await new Promise(r=>cs[i].toBlob(r,'image/jpeg',.95)),fn+(cs.length>1?'-'+(i+1):'')+'.jpg');
+   else{const P=new jspdf.jsPDF({unit:'pt',format:'a4'});cs.forEach((c,i)=>{if(i)P.addPage();P.addImage(c.toDataURL('image/jpeg',.95),'JPEG',0,0,595.28,841.89)});P.save(fn+'.pdf');await sleep(400)}}
+  await set(90);await dl(new Blob([JSON.stringify({S,fn})],{type:'application/json'}),fn+'.json')});
+ document.body.classList.toggle('ed',was)}
+document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>exp(b.dataset.x));
+$('#sj').onclick=()=>dl(new Blob([JSON.stringify({S,fn:$('#fn').value})],{type:'application/json'}),($('#fn').value.trim()||'Surat_Nenkin')+'.json');
+$('#fn').oninput=save;$('#ld0').onclick=()=>$('#fj').click();
+$('#fj').onchange=async e=>{const f=e.target.files[0];if(!f)return;await busy('Memuat sesi…',async set=>{await set(40);const j=JSON.parse(await f.text());S=j.S||j;$('#fn').value=j.fn||'';await set(80);render();save()});e.target.value=''};
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(innerWidth!=lw&&!dr)render()},200)});
+busy('Menyiapkan dashboard…',async set=>{await set(20);try{const j=JSON.parse(localStorage.getItem(K)||'null');if(j){S=j.S;$('#fn').value=j.fn||''}}catch(e){}
+ await set(50);await Promise.race([document.fonts.ready,sleep(2500)]);await set(85);render()}).then(()=>{if(!S.pages.length)$('#md').classList.add('on')});
+</script></body></html>
