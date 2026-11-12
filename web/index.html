@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#182b50">
+  <meta name="description" content="Cari alamat Jepang dari kode pos 7 digit, cepat tanpa backend.">
+  <title>Japan Postal Code — Pencarian Alamat Jepang</title>
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <div class="monogram" aria-hidden="true">〒</div>
+      <div>
+        <div class="brand">JAPAN ADDRESS LOOKUP</div>
+        <p class="header-note">Database kode pos Jepang · GitHub Pages</p>
+      </div>
+    </header>
+    <section class="hero">
+      <span class="eyebrow">SEARCH / 郵便番号検索</span>
+      <h1>Temukan alamat Jepang<br><em>cukup dari kode pos.</em></h1>
+      <p>Masukkan 7 digit kode pos. Kota, prefektur, dan wilayah akan terisi otomatis.</p>
+    </section>
+    <section class="card" aria-label="Form pencarian kode pos">
+      <label for="zipcode" class="label">Kode pos Jepang <span>郵便番号</span></label>
+      <div class="search">
+        <span class="zip-symbol">〒</span>
+        <input id="zipcode" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="Contoh: 100-0001" maxlength="8" spellcheck="false" aria-describedby="zip-help" autofocus>
+        <button id="find" type="button">Cari alamat</button>
+      </div>
+      <p class="help" id="zip-help">Bisa memakai tanda hubung atau tanpa tanda hubung.</p>
+      <p id="status" role="status" aria-live="polite" class="status">Siap mencari kode pos seluruh Jepang.</p>
+      <div id="choices" hidden class="choices"></div>
+      <div class="fields" id="result" hidden>
+        <div class="field"><label for="prefecture">Prefektur / 都道府県</label><input id="prefecture" readonly></div>
+        <div class="field"><label for="city">Kota/Kabupaten / 市区町村</label><input id="city" readonly></div>
+        <div class="field full"><label for="town">Area/Wilayah / 町域</label><input id="town" readonly></div>
+        <div class="field full"><label for="office">Instansi/Perusahaan (jika ada)</label><input id="office" readonly></div>
+        <div class="field full"><label for="detail">Nomor rumah, blok, apartemen, unit (lengkapi sendiri)</label><input id="detail" placeholder="丁目・番地・号・建物名・部屋番号"></div>
+        <div class="address-box"><span>Alamat lengkap / 住所</span><p id="full-address" lang="ja"></p><button type="button" id="copy">Salin alamat</button></div>
+      </div>
+    </section>
+    <footer>
+      <span>Data wilayah dari <a href="https://www.post.japanpost.jp/service/search/zipcode/download/" target="_blank" rel="noopener noreferrer">Japan Post</a>. Basis data diperbarui saat website di-deploy dan setiap bulan.</span>
+      <span id="updated">Belum memuat metadata.</span>
+    </footer>
+  </main>
+</body>
+</html>
