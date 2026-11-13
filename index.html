@@ -63,7 +63,7 @@ fieldset{border:0;padding:0;margin:0}fieldset:disabled{opacity:.45}
   <button class="bt g" id="bb" title="Tebal"><b>B</b></button><select id="ta" title="Rata teks"><option value="l">Kiri</option><option value="c">Tengah</option><option value="r">Kanan</option></select></div></fieldset></div>
  <div class="cd"><details id="pr"><summary><span class="n">3</span>Cek parameter hasil baca pesan</summary>
   <p class="hint">Isi hasil pembacaan pesan WA. Ubah di sini dan preview ikut berubah. Langkah ini boleh dilewati.</p>
-  <label class="hint"><input type="checkbox" id="az" checked> Deteksi kode pos Jepang otomatis (butuh file Excel di folder yang sama)</label><div id="pp"></div></details></div>
+  <label class="hint"><input type="checkbox" id="az" checked> Deteksi kode pos otomatis untuk alamat di Jepang dan alamat tiap perusahaan (butuh file Excel di folder yang sama)</label><div id="pp"></div></details></div>
  <div class="cd"><h3><span class="n">4</span>Unduh</h3><p class="hint">Hasil unduhan sama dengan preview. Simpan sesi lewat tombol “Simpan file sesi” atau menu Riwayat.</p>
   <input id="fn" placeholder="Nama file" style="width:100%;margin-bottom:8px">
   <div class="row"><button class="bt" data-x="doc" title="Format Word">Word</button><button class="bt" data-x="jpg" title="Gambar JPG per halaman">JPG</button><button class="bt" data-x="pdf" title="PDF semua halaman">PDF</button><button class="bt g" id="sj" title="Simpan data sesi saja">Simpan file sesi</button></div>
@@ -99,12 +99,12 @@ fieldset{border:0;padding:0;margin:0}fieldset:disabled{opacity:.45}
 <div class="ov" id="ld"><div class="ld"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" stroke="#ffffff30"/><circle id="lc" cx="50" cy="50" r="40"/></svg><div id="lp">0%</div><div id="lt"></div></div></div>
 <script>
 // ====== PENGATURAN ======
-const API='https://script.google.com/macros/s/AKfycbzNjo5VfALF7Vb72PNYS-yycwI6A4BLv0E8J4Yfb-7ithvF__WZSuX86QxwsTCWjL8Sng/exec';                                   // tempel URL Web App Apps Script di sini (lihat Kode.gs)
+const API='';                                   // tempel URL Web App Apps Script di sini (lihat Kode.gs)
 const ZIPFILE='Kode_Pos_Ringan.xlsx'; // file Excel di folder yang sama (GitHub Pages)
 // ========================
 const $=s=>document.querySelector(s),W=794,H=1123,K='nenkin_v2_',sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const F={t:"'Times New Roman','Noto Serif JP','MS Mincho',serif",a:"Arial,'Noto Sans JP',sans-serif",m:"'Noto Serif JP','MS Mincho',serif"},FN={t:'Times New Roman',a:'Arial',m:'MS Mincho'};
-let S={k:{},pages:[]},sel=null,sc=1,edit=true,tm,ct,dr=null,lw=0,U=null,TK=null,ZM='',ZD=null,dirty=false;
+let S={k:{},pages:[]},sel=null,sc=1,edit=true,tm,ct,dr=null,lw=0,U=null,TK=null,ZM={},ZD=null,dirty=false;
 const T=()=>sel&&S.pages[sel.p]&&S.pages[sel.p].items[sel.i];
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 async function busy(txt,fn){const o=$('#ld');o.classList.add('on');$('#lt').textContent=txt;
@@ -147,10 +147,10 @@ function company(g,d,y0){const I=[],c=g?[0,0,0,0]:[0,35,68,93],p=(k,x,y,w,h,s,o)
  C.forEach((r,i)=>{p('cl'+i,76,c[3]+yc[i],240,hc[i]+1,r[0],{bd:1});p('cv'+i,315,c[3]+yc[i],452,hc[i]+1,r[1],{bd:1,m:i==3})});return I}
 const SL=g=>g==1?[0,802]:[1,100+(g-2)*215];
 function addK(raw){const d=parse(raw);
- if(!S.pages.length){S.pages=[{items:[...applicant(d),...company(0,d,494)]}];S.k={0:{raw,d}};return true}
- let g=1;while(S.k[g])g++;if(g>4){alert('Maksimal 5 kaisha.');return false}
+ if(!S.pages.length){S.pages=[{items:[...applicant(d),...company(0,d,494)]}];S.k={0:{raw,d}};return 0}
+ let g=1;while(S.k[g])g++;if(g>4){alert('Maksimal 5 kaisha.');return -1}
  const c={pn:d.pn,ad:d.ad,tel:d.tel,masa:d.masa,jenis:d.jenis},[pi,y]=SL(g);
- while(S.pages.length<=pi)S.pages.push({items:[]});S.pages[pi].items.push(...company(g,c,y));S.k[g]={raw,d:c};return true}
+ while(S.pages.length<=pi)S.pages.push({items:[]});S.pages[pi].items.push(...company(g,c,y));S.k[g]={raw,d:c};return g}
 function delK(g){if(!confirm('Hapus Kaisha '+(g+1)+' dari halaman?'))return;S.pages.forEach(p=>p.items=p.items.filter(t=>t.g!==g));delete S.k[g];
  S.pages=S.pages.filter((p,i)=>i==0||p.items.length);render();save()}
 // ====== PARAMETER ======
@@ -159,11 +159,11 @@ FC=[['pn','Nama perusahaan (romaji + baris kanji)',1],['ad','Alamat perusahaan (
 MA={nen:'v0',nama:'v1',lahir:'v2',alamat:'v3',zip:'v3',pulang:'v4'},MC={pn:'cv0',ad:'cv1',tel:'cv2',masa:'cv3',jenis:'cv4'};
 function renderParams(){$('#pp').innerHTML=Object.keys(S.k).sort().map(gs=>{const g=+gs,d=S.k[g].d;
  const f=(g?FC:[...FA,...FC]).map(([k,l,t])=>`<label class="fld"><span>${l}</span>${t?`<textarea rows="2" data-g="${g}" data-f="${k}">${esc(d[k]||'')}</textarea>`:`<input data-g="${g}" data-f="${k}" value="${esc(d[k]||'')}">`}</label>`).join('');
- return`<div class="pk"><div class="row"><b>Kaisha ${g+1}</b>${g?`<button class="bt g sm" data-dk="${g}">Hapus</button>`:`<button class="bt g sm" id="dz" title="Cari kode pos dari alamat">Deteksi kode pos</button>`}</div>${g?'':`<p class="hint">${esc(ZM)}</p>`}${f}</div>`}).join('')}
+ return`<div class="pk"><div class="row"><b>Kaisha ${g+1}</b><button class="bt g sm" data-dz="${g}" title="Cari kode pos dari alamat">Deteksi kode pos</button>${g?`<button class="bt g sm" data-dk="${g}">Hapus</button>`:''}</div><p class="hint">${(ZM[g]||[]).map(esc).join('<br>')}</p>${f}</div>`}).join('')}
 function setF(g,f,v){const d=S.k[g].d;d[f]=v;const key=MA[f]||`g${g}.${MC[f]}`;
  S.pages.forEach((p,pi)=>p.items.forEach((t,i)=>{if(t.k===key){t.s=MA[f]&&(f=='alamat'||f=='zip')?addr(d):f=='nen'?fmtN(v):v;const x=document.querySelector(`.it[data-p="${pi}"][data-i="${i}"] .tx`);if(x)x.textContent=t.s}}));save()}
 $('#pp').addEventListener('input',e=>{const t=e.target;if(t.dataset.f)setF(+t.dataset.g,t.dataset.f,t.value)});
-$('#pp').addEventListener('click',e=>{const b=e.target.closest('[data-dk]');if(b)delK(+b.dataset.dk);if(e.target.closest('#dz'))detectZip()});
+$('#pp').addEventListener('click',e=>{const b=e.target.closest('[data-dk]');if(b)delK(+b.dataset.dk);const z=e.target.closest('[data-dz]');if(z)detect([+z.dataset.dz],true)});
 // ====== KODE POS ======
 const NZ=s=>String(s).toLowerCase().replace(/\(.*?\)/g,'').replace(/[^a-z]/g,'').replace(/oh/g,'o').replace(/ou|oo/g,'o').replace(/uu/g,'u');
 const SW1=new Set(['ken','to','fu']),SW2=new Set(['shi','ku','gun','machi','cho','mura','son']);
@@ -178,7 +178,7 @@ function zipBuild(rows){const P=new Map(),nc=new Map();
 function zipFind(P,a){const inp=NZ(a);let best=null,ic=inp;
  let ps=[...P.values()].filter(p=>p.v.some(x=>inp.includes(x)));
  if(!ps.length)ps=[...P.values()];
- for(const p of ps)for(const c of p.c.values()){const m=c.v.filter(x=>(x.length>=4||x===c.v[0])&&ic.includes(x)).sort((x,y)=>y.length-x.length)[0];if(m&&(!best||m.length>best.l))best={l:m.length,m,c}}
+ for(const p of ps)for(const c of p.c.values()){const m=c.v.filter(x=>(x.length>=4||x===c.v[0])&&ic.includes(x)&&(x===c.v[0]||!p.v.includes(x)||inp.split(x).length>2)).sort((x,y)=>y.length-x.length)[0];if(m&&(!best||m.length>best.l))best={l:m.length,m,c}}
  if(!best)return null;const ia=ic.replace(best.m,'');let ar=null;
  for(const r of best.c.rows)if(r[0].length>=3&&ia.includes(r[0])&&(!ar||r[0].length>ar[0].length))ar=r;
  if(ar)return{z:ar[1],j:ar[2],conf:'area'};const g=best.c.rows.find(r=>r[3])||best.c.rows[0];return{z:g[1],j:g[2],conf:'kota'}}
@@ -189,10 +189,19 @@ async function loadZip(set){if(ZD)return ZD;
  const buf=new Uint8Array(n);let o=0;ch.forEach(c=>{buf.set(c,o);o+=c.length});await set(60);await sleep(30);
  const wb=XLSX.read(buf,{type:'array',sheets:'Wilayah'});await set(80);
  const rows=XLSX.utils.sheet_to_json(wb.Sheets['Wilayah'],{header:1,raw:true});await set(90);ZD=zipBuild(rows);return ZD}
-async function detectZip(){const d=S.k[0]&&S.k[0].d;if(!d||!d.alamat){ZM='Alamat di Jepang masih kosong.';renderParams();return}
- await busy('Mendeteksi kode pos…',async set=>{try{const P=await loadZip(set),r=zipFind(P,d.alamat);
-  if(r){setF(0,'zip','〒'+r.z);ZM=`Terdeteksi 〒${r.z} (${r.conf=='area'?'cocok sampai area':'cocok sampai kota, mohon cek ulang'}): ${r.j}`}else ZM='Alamat tidak ditemukan di data. Isi kode pos manual.'}
-  catch(e){ZM='Gagal deteksi: '+e.message}});renderParams()}
+const adBase=a=>String(a||'').replace(/\n?〒\s*\d{3}-?\d{4}\s*$/,'').trim(),hasZ=a=>/〒\s*\d{3}-?\d{4}/.test(a||''),cf=r=>r.conf=='area'?'cocok sampai area':'cocok sampai kota, mohon cek ulang';
+async function detect(gs,force){
+ await busy('Mendeteksi kode pos…',async set=>{try{const P=await loadZip(set);
+  for(const g of gs){const d=S.k[g]&&S.k[g].d;if(!d)continue;const m=[];
+   if(g===0){if(!d.alamat)m.push('Alamat di Jepang kosong.');else if(!force&&d.zip)m.push('Alamat di Jepang: kode pos sudah terisi.');
+    else{const r=zipFind(P,d.alamat);if(r){setF(0,'zip','〒'+r.z);m.push(`Alamat di Jepang: 〒${r.z} (${cf(r)}) ${r.j}`)}else m.push('Alamat di Jepang: tidak ditemukan, isi manual.')}}
+   const base=adBase(d.ad);
+   if(!base)m.push('Alamat perusahaan kosong.');else if(!force&&hasZ(d.ad))m.push('Alamat perusahaan: kode pos sudah terisi dari pesan.');
+   else{const r=zipFind(P,base);if(!r)m.push('Alamat perusahaan: tidak ditemukan, isi manual.');
+    else if(hasZ(d.ad)&&r.conf!='area')m.push(`Alamat perusahaan: kode pos lama dipertahankan (hasil deteksi 〒${r.z} hanya cocok sampai kota).`);
+    else{setF(g,'ad',base+'\n〒'+r.z);m.push(`Alamat perusahaan: 〒${r.z} (${cf(r)}) ${r.j}`)}}
+   ZM[g]=m}
+ }catch(e){gs.forEach(g=>ZM[g]=['Gagal deteksi: '+e.message])}});renderParams()}
 // ====== PREVIEW ======
 function ap(d,t){const s=d.style;s.left=t.x+'px';s.top=t.y+'px';s.width=t.w+'px';s.height=t.h+'px';s.fontFamily=F[t.f];s.fontSize=t.z+'px';s.color=t.c;
  s.fontWeight=t.b?700:400;s.textAlign={l:'left',c:'center',r:'right'}[t.al];s.border=t.bd?'1px solid #000':'0';s.alignItems=t.m?'center':'flex-start'}
@@ -232,15 +241,15 @@ addEventListener('pointerup',()=>{if(!dr)return;dr.pg.querySelectorAll('.gx,.gy'
 $('#prev').addEventListener('dblclick',e=>{const d=e.target.closest('.it');if(!d)return;const x=d.firstChild;x.contentEditable=true;x.focus();getSelection().selectAllChildren(x);
  x.onblur=()=>{x.contentEditable=false;S.pages[d.dataset.p].items[d.dataset.i].s=x.innerText.replace(/\n$/,'');save()}});
 $('#rst').onclick=()=>{if(!confirm('Mulai dari awal? Semua halaman dan isian yang sedang dibuka akan dihapus. Riwayat di Google Spreadsheet tetap aman.'))return;
- clearTimeout(tm);clearTimeout(ct);S={k:{},pages:[]};ZM='';dirty=false;edit=true;$('#fn').value='';try{localStorage.removeItem(K+U)}catch(e){}render();$('#sv').innerHTML='&nbsp;';$('#md').classList.add('on')};
+ clearTimeout(tm);clearTimeout(ct);S={k:{},pages:[]};ZM={};dirty=false;edit=true;$('#fn').value='';try{localStorage.removeItem(K+U)}catch(e){}render();$('#sv').innerHTML='&nbsp;';$('#md').classList.add('on')};
 // ====== TAMBAH KAISHA ======
 $('#add').onclick=()=>$('#md').classList.add('on');
 document.addEventListener('click',e=>{const c=e.target.closest('[data-close]');if(c)c.closest('.ov').classList.remove('on')});
 $('#mk').onclick=async()=>{const r=$('#raw').value;if(r.trim().length<20){alert('Tempel dulu pesan WhatsApp-nya ya.');return}
- $('#md').classList.remove('on');const first=!S.pages.length;let ok=false;
- await busy('Memproses pesan…',async set=>{await set(30);ok=addK(r);await set(70);render();await set(95);save()});
- if(!ok)return;$('#raw').value='';
- if(first&&$('#az').checked)await detectZip();
+ $('#md').classList.remove('on');let ng=-1;
+ await busy('Memproses pesan…',async set=>{await set(30);ng=addK(r);await set(70);render();await set(95);save()});
+ if(ng<0)return;$('#raw').value='';
+ if($('#az').checked)await detect([ng],false);
  setTimeout(()=>{const p=document.querySelectorAll('.pw');p[p.length-1]&&p[p.length-1].scrollIntoView({behavior:'smooth'})},100)};
 // ====== UNDUH ======
 const dl=async(b,n)=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();a.remove();await sleep(400)};
