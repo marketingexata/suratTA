@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html lang="id"><head><meta charset="utf-8"><title>Surat Pengganti Buku Nenkin</title>
+<meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#f5f7ff;--cd:#fff;--tx:#1c2140;--mu:#6a7094;--ac:#5b5cf0;--a2:#14b8a6;--bd:#e2e6f5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12142a;--cd:#1c1f3b;--tx:#eceefe;--mu:#9aa0c8;--bd:#2d3160}}
-:root[data-theme="dark"]{--bg:#12142a;--cd:#1c1f3b;--tx:#eceefe;--mu:#9aa0c8;--bd:#2d3160}
+:root{--bg:#f5f7ff;--cd:#fff;--tx:#1c2140;--mu:#6a7094;--ac:#5b5cf0;--a2:#14b8a6;--bd:#e2e6f5;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-header{padding:22px 16px 6px;max-width:1300px;margin:auto}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.hd{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--bg);border-bottom:1px solid var(--bd)}body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:41;background:var(--bg)}
+.hd>div{max-width:1300px;margin:auto;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}.brand{display:flex;align-items:center;gap:12px;min-width:0}.logo{height:42px;width:auto}.pw{scroll-margin-top:90px}
+@media(max-width:600px){h1{font-size:16px}.hd p{display:none}.logo{height:30px}.hd .bt{padding:7px 9px;font-size:13px}}
 h1{margin:0;font-size:24px;background:linear-gradient(90deg,var(--ac),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
-header p{margin:2px 0 0;color:var(--mu);font-size:14px}
-.wrap{display:grid;grid-template-columns:340px 1fr;gap:18px;padding:16px;max-width:1300px;margin:auto}
+.hd p{margin:2px 0 0;color:var(--mu);font-size:14px}
+.wrap{display:grid;grid-template-columns:350px 1fr;gap:18px;padding:16px;max-width:1300px;margin:auto}
 @media(max-width:860px){.wrap{grid-template-columns:1fr}}
-aside{position:sticky;top:12px;align-self:start}@media(max-width:860px){aside{position:static}}
+aside{position:sticky;top:92px;align-self:start;max-height:calc(100vh - 108px);overflow:auto}@media(max-width:860px){aside{position:static;max-height:none}}
 .cd{background:var(--cd);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:12px;animation:up .5s both}
 .cd h3{margin:0 0 6px;font-size:15px;display:flex;align-items:center}
-.n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--a2));color:#fff;font-size:13px;margin-right:8px}
+summary{cursor:pointer;display:flex;align-items:center;font-weight:600;list-style:none}summary::-webkit-details-marker{display:none}
+.n{display:inline-grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--a2));color:#fff;font-size:13px;margin-right:8px}
 .hint{color:var(--mu);font-size:12.5px;margin:4px 0 8px}
 .bt{border:0;border-radius:10px;padding:9px 13px;font:inherit;font-weight:600;cursor:pointer;background:var(--ac);color:#fff;transition:.2s}
-.bt:hover{transform:translateY(-2px);box-shadow:0 6px 16px #5b5cf055}.bt.g{background:var(--bd);color:var(--tx)}.bt:disabled{opacity:.4;pointer-events:none}
+.bt:hover{transform:translateY(-2px);box-shadow:0 6px 16px #5b5cf055}.bt.g{background:var(--bd);color:var(--tx)}.bt:disabled{opacity:.4;pointer-events:none}.bt.sm{padding:3px 9px;font-size:12px}
 .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 input,select,textarea{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:7px 9px}
+.fld{display:block;margin:7px 0}.fld span{display:block;font-size:12px;color:var(--mu)}.fld input,.fld textarea{width:100%}
+.pk{border-top:1px dashed var(--bd);padding-top:8px;margin-top:8px}
 fieldset{border:0;padding:0;margin:0}fieldset:disabled{opacity:.45}
 .pw{margin:0 auto 22px;animation:pop .45s both}.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;color:var(--mu);font-size:13px}
-.ph button{border:0;background:none;color:#e11d48;cursor:pointer;font:inherit}
 .ps{margin:auto;box-shadow:0 10px 30px #1c214035;border-radius:4px;overflow:hidden;background:#fff}
 .pg{width:794px;height:1123px;position:relative;transform-origin:0 0;background:#fff;color:#000}
 .it{position:absolute;display:flex;line-height:1.15;padding:1px 4px;user-select:none}
@@ -35,45 +39,81 @@ fieldset{border:0;padding:0;margin:0}fieldset:disabled{opacity:.45}
 .ed .it{outline:1px dashed #5b5cf0;cursor:move;touch-action:none}.ed .it.sel{outline:2px solid #5b5cf0;background:#5b5cf014}
 .rs{display:none;position:absolute;right:-6px;bottom:-6px;width:11px;height:11px;background:#5b5cf0;border-radius:3px;cursor:nwse-resize}.ed .sel .rs{display:block}
 .gx,.gy{position:absolute;background:#f43f5e;display:none;pointer-events:none}.gx{top:0;bottom:0;width:1px}.gy{left:0;right:0;height:1px}
-.ov{position:fixed;inset:0;display:none;place-items:center;background:#0b0e2299;z-index:50;padding:16px}.ov.on{display:grid;animation:fade .25s}
-#ld{z-index:60;background:#0b0e22cc;color:#fff}.ld{text-align:center}.ld svg{width:130px;height:130px;transform:rotate(-90deg)}
+.ov{position:fixed;inset:0;display:none;place-items:center;background:#0b0e2299;z-index:50;padding:16px;overflow:auto}.ov.on{display:grid;animation:fade .25s}
+#lg{z-index:55;background:var(--bg)}#ld{z-index:60;background:#0b0e22cc;color:#fff}.ld{text-align:center}.ld svg{width:130px;height:130px;transform:rotate(-90deg)}
 .ld circle{fill:none;stroke-width:8;stroke-linecap:round}#lc{stroke:#7c7dff;stroke-dasharray:251.3;stroke-dashoffset:251.3;transition:stroke-dashoffset .3s}
 #lp{font-size:26px;font-weight:700;margin-top:-84px;height:84px}
-.md{width:min(580px,100%);background:var(--cd);border-radius:18px;padding:18px;animation:pop .35s}
-.md textarea{width:100%;height:250px;resize:vertical}
+.md{width:min(580px,100%);background:var(--cd);border-radius:18px;padding:18px;animation:pop .35s;border:1px solid var(--bd)}
+.md textarea#raw{width:100%;height:250px;resize:vertical}
+.hi{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--bd);border-radius:10px;margin:6px 0}
+.tg{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--bd);margin-right:6px}
 @keyframes up{from{opacity:0;transform:translateY(12px)}}@keyframes pop{from{opacity:0;transform:scale(.97)}}@keyframes fade{from{opacity:0}}
 </style></head><body>
-<header><h1>Surat Pengganti Buku Nenkin</h1><p>Tempel pesan WhatsApp → otomatis jadi surat siap unduh. Data tersimpan otomatis di perangkat ini.</p></header>
+<header class="hd"><div><div class="brand"><img class="logo" src="https://marketingexata.github.io/suratTA/EXATA.png" alt="EXATA"><div><h1>Surat Pengganti Buku Nenkin</h1><p>Tempel pesan WhatsApp → otomatis jadi surat siap unduh.</p></div></div>
+ <div class="row" id="uc" hidden><button class="bt g" id="bh" title="Simpan dan buka riwayat sesi">🕘 Riwayat</button><button class="bt g" id="ba" title="Profil: ganti username, password, email, keluar">👤 <span id="un"></span></button></div></div></header>
 <div class="wrap">
 <aside>
- <div class="cd"><h3><span class="n">1</span>Tempel pesan WA</h3><p class="hint">Setiap kaisha (perusahaan) jadi 1 halaman. Maksimal 5.</p>
+ <div class="cd"><h3><span class="n">1</span>Tempel pesan WA</h3><p class="hint">Pesan pertama = data pemohon + kaisha 1. Pesan berikutnya (+ Kaisha) hanya menambah tabel perusahaannya. Maksimal 5.</p>
   <div class="row"><button class="bt" id="add" title="Tempel pesan WhatsApp berikutnya">+ Kaisha <span id="cnt">(0/5)</span></button>
-  <button class="bt g" id="ld0" title="Buka file .json hasil unduhan sebelumnya">Muat sesi</button><input type="file" id="fj" accept=".json" hidden></div></div>
+  <button class="bt g" id="ld0" title="Buka file .json hasil unduhan">Muat file sesi</button><button class="bt g" id="rst" title="Hapus semua isian dan mulai dari nol">Mulai dari awal</button><input type="file" id="fj" accept=".json" hidden></div></div>
  <div class="cd"><h3><span class="n">2</span>Rapikan di preview</h3>
-  <p class="hint">Klik teks untuk memilih, seret untuk menggeser (otomatis menempel ke garis template), tarik titik biru untuk ukuran, klik dua kali untuk mengetik. Klik area kosong untuk melihat preview bersih.</p>
+  <p class="hint">Klik teks untuk memilih, seret untuk menggeser (otomatis menempel ke garis template), tarik titik biru untuk ukuran, klik dua kali untuk mengetik. Klik area kosong untuk preview bersih.</p>
   <fieldset id="tb" disabled><div class="row"><select id="tf" title="Jenis font"><option value="t">Times New Roman</option><option value="a">Arial</option><option value="m">Mincho (Jepang)</option></select>
   <input id="tz" type="number" min="5" max="60" step=".5" style="width:70px" title="Ukuran font (pt)"><input id="tc" type="color" title="Warna teks" style="padding:2px;width:42px">
   <button class="bt g" id="bb" title="Tebal"><b>B</b></button><select id="ta" title="Rata teks"><option value="l">Kiri</option><option value="c">Tengah</option><option value="r">Kanan</option></select></div></fieldset></div>
- <div class="cd"><h3><span class="n">3</span>Unduh</h3><p class="hint">Setiap unduhan otomatis ikut menyimpan file .json (data sesi).</p>
+ <div class="cd"><details id="pr"><summary><span class="n">3</span>Cek parameter hasil baca pesan</summary>
+  <p class="hint">Isi hasil pembacaan pesan WA. Ubah di sini dan preview ikut berubah. Langkah ini boleh dilewati.</p>
+  <label class="hint"><input type="checkbox" id="az" checked> Deteksi kode pos Jepang otomatis (butuh file Excel di folder yang sama)</label><div id="pp"></div></details></div>
+ <div class="cd"><h3><span class="n">4</span>Unduh</h3><p class="hint">Hasil unduhan sama dengan preview. Simpan sesi lewat tombol “Simpan file sesi” atau menu Riwayat.</p>
   <input id="fn" placeholder="Nama file" style="width:100%;margin-bottom:8px">
-  <div class="row"><button class="bt" data-x="doc" title="Format Word">Word</button><button class="bt" data-x="jpg" title="Gambar JPG per halaman">JPG</button><button class="bt" data-x="pdf" title="PDF semua halaman">PDF</button><button class="bt g" id="sj" title="Simpan data sesi saja">Simpan progres</button></div>
+  <div class="row"><button class="bt" data-x="doc" title="Format Word">Word</button><button class="bt" data-x="jpg" title="Gambar JPG per halaman">JPG</button><button class="bt" data-x="pdf" title="PDF semua halaman">PDF</button><button class="bt g" id="sj" title="Simpan data sesi saja">Simpan file sesi</button></div>
   <p class="hint" id="sv">&nbsp;</p></div>
 </aside>
 <section id="prev"></section>
 </div>
+
+<div class="ov" id="lg"><div class="md"><img class="logo" src="https://marketingexata.github.io/suratTA/EXATA.png" alt="EXATA" style="display:block;margin:0 auto 8px;height:52px"><h2 style="margin:0 0 4px;text-align:center">Masuk</h2><p class="hint" id="lm">Masuk dengan akun AI, MT, atau SN.</p>
+ <div id="v1"><p class="hint" style="margin-bottom:4px">Pilih akun:</p><div class="row" id="qa"><button class="bt g" data-q="AI">AI</button><button class="bt g" data-q="MT">MT</button><button class="bt g" data-q="SN">SN</button></div><label class="fld"><span>Username</span><input id="lu" autocomplete="username"></label><label class="fld"><span>Password</span><input id="pw" type="password" autocomplete="current-password"></label>
+  <div class="row"><button class="bt" id="go">Masuk</button><button class="bt g" id="fg">Lupa password?</button></div></div>
+ <div id="v2" hidden><p class="hint">Kode 6 angka dikirim ke email yang sudah didaftarkan di menu Akun.</p><label class="fld"><span>Username</span><input id="fu"></label>
+  <button class="bt" id="sc">Kirim kode ke email</button>
+  <label class="fld"><span>Kode dari email</span><input id="fc" inputmode="numeric"></label><label class="fld"><span>Password baru (min. 6 karakter)</span><input id="fp" type="password"></label>
+  <div class="row"><button class="bt" id="rs">Atur password baru</button><button class="bt g" id="bk">Kembali</button></div></div></div></div>
+
 <div class="ov" id="md"><div class="md"><h3 style="margin-top:0">Tempel pesan WhatsApp mentah</h3>
- <p class="hint">Salin pesan “SURAT PENGGANTI BUKU NENKIN” dari WhatsApp lalu tempel di sini. Bidang kerja dan cara pembayaran tidak dipakai karena tidak ada di template.</p>
+ <p class="hint">Salin pesan “SURAT PENGGANTI BUKU NENKIN” dari WhatsApp lalu tempel di sini.</p>
  <textarea id="raw" placeholder="SURAT PENGGANTI BUKU NENKIN&#10;1. Nama Lengkap : ..."></textarea>
- <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="bt g" id="cn">Batal</button><button class="bt" id="mk">Buat halaman</button></div></div></div>
+ <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="bt g" data-close>Batal</button><button class="bt" id="mk">Buat</button></div></div></div>
+
+<div class="ov" id="hm"><div class="md"><h3 style="margin-top:0">Riwayat sesi</h3><p class="hint">Otomatis tersimpan ke Google Spreadsheet milik akunmu (maks. 5 terakhir). Simpan manual untuk titik penting. Memuat riwayat mengembalikan seluruh template dan isian sesi itu.</p>
+ <div class="row"><input id="hn" placeholder="Nama simpanan (opsional)" style="flex:1"><button class="bt" id="hs">Simpan manual</button></div><div id="hl"></div>
+ <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="bt g" data-close>Tutup</button></div></div></div>
+
+<div class="ov" id="am"><div class="md"><h3 style="margin-top:0">Akun saya</h3><p class="hint" id="ai"></p>
+ <label class="fld"><span>Password saat ini (wajib untuk semua perubahan)</span><input id="cp" type="password"></label>
+ <label class="fld"><span>Username baru</span><input id="nu"></label><button class="bt" id="b1">Ganti username</button>
+ <label class="fld"><span>Password baru (min. 6 karakter)</span><input id="np" type="password"></label><button class="bt" id="b2">Ganti password</button>
+ <label class="fld"><span>Email untuk reset password</span><input id="em" type="email"></label><button class="bt" id="b3">Simpan email</button>
+ <div class="row" style="justify-content:space-between;margin-top:14px"><button class="bt g" id="bo">Keluar dari akun</button><button class="bt g" data-close>Tutup</button></div></div></div>
+
 <div class="ov" id="ld"><div class="ld"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" stroke="#ffffff30"/><circle id="lc" cx="50" cy="50" r="40"/></svg><div id="lp">0%</div><div id="lt"></div></div></div>
 <script>
-const $=s=>document.querySelector(s),W=794,H=1123,K='nenkin_v1',sleep=ms=>new Promise(r=>setTimeout(r,ms));
+// ====== PENGATURAN ======
+const API='https://script.google.com/macros/s/AKfycbzNjo5VfALF7Vb72PNYS-yycwI6A4BLv0E8J4Yfb-7ithvF__WZSuX86QxwsTCWjL8Sng/exec';                                   // tempel URL Web App Apps Script di sini (lihat Kode.gs)
+const ZIPFILE='Kode_Pos_Ringan.xlsx'; // file Excel di folder yang sama (GitHub Pages)
+// ========================
+const $=s=>document.querySelector(s),W=794,H=1123,K='nenkin_v2_',sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const F={t:"'Times New Roman','Noto Serif JP','MS Mincho',serif",a:"Arial,'Noto Sans JP',sans-serif",m:"'Noto Serif JP','MS Mincho',serif"},FN={t:'Times New Roman',a:'Arial',m:'MS Mincho'};
-let S={pages:[]},sel=null,sc=1,edit=true,tm,dr=null,lw=0;
+let S={k:{},pages:[]},sel=null,sc=1,edit=true,tm,ct,dr=null,lw=0,U=null,TK=null,ZM='',ZD=null,dirty=false;
 const T=()=>sel&&S.pages[sel.p]&&S.pages[sel.p].items[sel.i];
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 async function busy(txt,fn){const o=$('#ld');o.classList.add('on');$('#lt').textContent=txt;
  const set=p=>{$('#lp').textContent=p+'%';$('#lc').style.strokeDashoffset=251.3*(1-p/100);return sleep(40)};
  try{await set(0);await fn(set)}catch(e){alert('Maaf, terjadi kendala: '+e.message)}finally{await set(100);await sleep(200);o.classList.remove('on')}}
+async function api(a,d={}){if(!API)throw Error('URL Apps Script belum diisi (baris const API di file HTML).');
+ const r=await fetch(API,{method:'POST',body:JSON.stringify({a,t:TK,...d})}),j=await r.json();if(!j.ok)throw Error(j.msg||'Gagal');return j}
+// ====== PARSER ======
+const fmtN=s=>{const d=String(s).replace(/\D/g,'');return d.length>4?d.slice(0,4)+'-'+d.slice(4):d};
 function parse(r){
  r=r.replace(/[\u2060\u200b\u200e\u200f\u00a0]/g,' ');
  const g=re=>{const m=r.match(re);return m?m[1].trim():''},p=n=>String(n).padStart(2,'0');
@@ -84,35 +124,90 @@ function parse(r){
  const zr=/〒\s*\d{3}-?\d{4}/,z=(ad.match(zr)||[''])[0].replace(/\s/g,'');
  ad=ad.replace(zr,'').replace(/\s*\n\s*/g,' ').trim().toUpperCase();
  const w=r.match(/tgl\s*:\s*(\d+)\s*bln\s*:\s*(\d+)\s*th\s*:\s*(\d{4})\s*sampai\s*tgl\s*:\s*(\d+)\s*bln\s*:\s*(\d+)\s*th\s*:\s*(\d{4})/i);
- return{nen:g(/NENKIN JIKA TAU\s*:[ \t]*([\d\- ]*)/i),nama:g(/Nama Lengkap\s*:[ \t]*(.*)/i).toUpperCase(),
-  lahir:lm?`${lm[3]} 年 ${p(lm[2])} 月 ${p(lm[1])} 日`:'',alamat:g(/alamat apato\s*:[ \t]*(.*)/i).toUpperCase(),
-  pn:rj.trim().toUpperCase()+(kj?'\n'+kj:''),ad:ad+(z?'\n'+z:''),tel:g(/No\s*tlf perusahaan\s*:[ \t]*(.*)/i),
-  masa:w?`${w[3]} 年 ${p(w[2])} 月 ${p(w[1])} 日 – ${w[6]} 年 ${p(w[5])} 月 ${p(w[4])} 日`:''}}
-function build(d){const I=[],a=(k,x,y,w,h,s,o)=>I.push({k,x,y,w,h,ox:x,oy:y,s,f:'t',z:14,c:'#000000',b:0,al:'l',bd:0,m:0,...o});
+ return{nen:fmtN(g(/NENKIN JIKA TAU\s*:[ \t]*([\d\- ]*)/i)),nama:g(/Nama Lengkap\s*:[ \t]*(.*)/i).toUpperCase(),
+  lahir:lm?`${lm[3]} 年 ${p(lm[2])} 月 ${p(lm[1])} 日`:'',alamat:g(/alamat apato\s*:[ \t]*(.*)/i).toUpperCase(),zip:'',
+  pulang:'2024 年 12 月 16 日',pn:rj.trim().toUpperCase()+(kj?'\n'+kj:''),ad:ad+(z?'\n'+z:''),tel:g(/No\s*tlf perusahaan\s*:[ \t]*(.*)/i),
+  masa:w?`${w[3]} 年 ${p(w[2])} 月 ${p(w[1])} 日 – ${w[6]} 年 ${p(w[5])} 月 ${p(w[4])} 日`:'',jenis:'KOUSEI NENKIN/ 厚生年金保険'}}
+// ====== TEMPLATE ======
+const mk=(k,x,y,w,h,s,o)=>({k,x,y,w,h,ox:x,oy:y,s,f:'t',z:14,c:'#000000',b:0,al:'l',bd:0,m:0,...o});
+const addr=d=>d.alamat+(d.zip?'\n'+d.zip:'');
+function applicant(d){const I=[],a=(k,x,y,w,h,s,o)=>I.push(mk(k,x,y,w,h,s,{g:0,...o}));
  a('jd',96,100,602,26,'Data Pemohon Bagi Yang Tidak Punya Buku Nenkin',{b:1,z:18.7,al:'c'});
  a('jk',96,138,602,34,'履歴(公的年金制度加入経過）',{b:1,z:21.3,al:'c',f:'m'});
  a('in',97,222,500,22,'できるだけくわしく、正確に記入してください。',{f:'m'});
- const A=[['Nomor Nenkin\n基础年金番号',d.nen],['Nama\n 氏 名',d.nama],['Tanggal lahir\n 生年月日',d.lahir],['Alamat tinggal ketika di Jepang\n日本における最終居住地',d.alamat],['Tanggal kepulangan\n日本出国日','']],
+ const A=[['Nomor Nenkin\n基础年金番号',d.nen],['Nama\n 氏 名',d.nama],['Tanggal lahir\n 生年月日',d.lahir],['Alamat tinggal ketika di Jepang\n日本における最終居住地',addr(d)],['Tanggal kepulangan\n日本出国日',d.pulang]],
  ya=[257,293,329,365,419],ha=[36,36,36,54,36];
- A.forEach((r,i)=>{a('l'+i,76,ya[i],226,ha[i]+1,r[0],{bd:1});a('v'+i,301,ya[i],466,ha[i]+1,r[1],{bd:1,m:1})});
- a('k1',97,494,520,22,'Ketika di Jepang, bekerja diperusahaan        :');
- a('k2',97,529,520,22,'履歴(公的年金制度加入経過）',{b:1,f:'m'});
- a('k3',97,562,520,22,'*mohon ditulis semua nama perusahaan bila ada lebih dari Satu',{z:13});
- const C=[['Nama Perusahaan\n所属会社名',d.pn],['Alamat Perusahaan\n所属会社居住地',d.ad],['Nomor Telepon\n同電話番号',d.tel],['Jangka waktu bekerja\n勤務期間または国民年金の加入期間',d.masa],['Jenis Nenkin\n加入していた年金制度の種別','']],
- yc=[587,623,677,713,749],hc=[36,54,36,36,36];
- C.forEach((r,i)=>{a('cl'+i,76,yc[i],240,hc[i]+1,r[0],{bd:1});a('cv'+i,315,yc[i],452,hc[i]+1,r[1],{bd:1,m:i==3})});
- return I}
+ A.forEach((r,i)=>{a('l'+i,76,ya[i],226,ha[i]+1,r[0],{bd:1});a('v'+i,301,ya[i],466,ha[i]+1,r[1],{bd:1,m:1})});return I}
+function company(g,d,y0){const I=[],c=g?[0,0,0,0]:[0,35,68,93],p=(k,x,y,w,h,s,o)=>I.push(mk(`g${g}.${k}`,x,y0+y,w,h,s,{g,...o}));
+ if(!g)p('k1',97,c[0],520,22,'Ketika di Jepang, bekerja diperusahaan        :');
+ if(!g)p('k2',97,c[1],520,22,'履歴(公的年金制度加入経過）',{b:1,f:'m'});
+ if(!g)p('k3',97,c[2],520,22,'*mohon ditulis semua nama perusahaan bila ada lebih dari Satu',{z:13});
+ const C=[['Nama Perusahaan\n所属会社名',d.pn],['Alamat Perusahaan\n所属会社居住地',d.ad],['Nomor Telepon\n同電話番号',d.tel],['Jangka waktu bekerja\n勤務期間または国民年金の加入期間',d.masa],['Jenis Nenkin\n加入していた年金制度の種別',d.jenis]],
+ yc=[0,36,90,126,162],hc=[36,54,36,36,36];
+ C.forEach((r,i)=>{p('cl'+i,76,c[3]+yc[i],240,hc[i]+1,r[0],{bd:1});p('cv'+i,315,c[3]+yc[i],452,hc[i]+1,r[1],{bd:1,m:i==3})});return I}
+const SL=g=>g==1?[0,802]:[1,100+(g-2)*215];
+function addK(raw){const d=parse(raw);
+ if(!S.pages.length){S.pages=[{items:[...applicant(d),...company(0,d,494)]}];S.k={0:{raw,d}};return true}
+ let g=1;while(S.k[g])g++;if(g>4){alert('Maksimal 5 kaisha.');return false}
+ const c={pn:d.pn,ad:d.ad,tel:d.tel,masa:d.masa,jenis:d.jenis},[pi,y]=SL(g);
+ while(S.pages.length<=pi)S.pages.push({items:[]});S.pages[pi].items.push(...company(g,c,y));S.k[g]={raw,d:c};return true}
+function delK(g){if(!confirm('Hapus Kaisha '+(g+1)+' dari halaman?'))return;S.pages.forEach(p=>p.items=p.items.filter(t=>t.g!==g));delete S.k[g];
+ S.pages=S.pages.filter((p,i)=>i==0||p.items.length);render();save()}
+// ====== PARAMETER ======
+const FA=[['nen','Nomor Nenkin'],['nama','Nama'],['lahir','Tanggal lahir'],['alamat','Alamat di Jepang',1],['zip','Kode pos (〒)'],['pulang','Tanggal kepulangan (contoh, edit bila perlu)']],
+FC=[['pn','Nama perusahaan (romaji + baris kanji)',1],['ad','Alamat perusahaan (+ baris kode pos)',1],['tel','Telepon'],['masa','Masa kerja'],['jenis','Jenis Nenkin (contoh, edit bila perlu)']],
+MA={nen:'v0',nama:'v1',lahir:'v2',alamat:'v3',zip:'v3',pulang:'v4'},MC={pn:'cv0',ad:'cv1',tel:'cv2',masa:'cv3',jenis:'cv4'};
+function renderParams(){$('#pp').innerHTML=Object.keys(S.k).sort().map(gs=>{const g=+gs,d=S.k[g].d;
+ const f=(g?FC:[...FA,...FC]).map(([k,l,t])=>`<label class="fld"><span>${l}</span>${t?`<textarea rows="2" data-g="${g}" data-f="${k}">${esc(d[k]||'')}</textarea>`:`<input data-g="${g}" data-f="${k}" value="${esc(d[k]||'')}">`}</label>`).join('');
+ return`<div class="pk"><div class="row"><b>Kaisha ${g+1}</b>${g?`<button class="bt g sm" data-dk="${g}">Hapus</button>`:`<button class="bt g sm" id="dz" title="Cari kode pos dari alamat">Deteksi kode pos</button>`}</div>${g?'':`<p class="hint">${esc(ZM)}</p>`}${f}</div>`}).join('')}
+function setF(g,f,v){const d=S.k[g].d;d[f]=v;const key=MA[f]||`g${g}.${MC[f]}`;
+ S.pages.forEach((p,pi)=>p.items.forEach((t,i)=>{if(t.k===key){t.s=MA[f]&&(f=='alamat'||f=='zip')?addr(d):f=='nen'?fmtN(v):v;const x=document.querySelector(`.it[data-p="${pi}"][data-i="${i}"] .tx`);if(x)x.textContent=t.s}}));save()}
+$('#pp').addEventListener('input',e=>{const t=e.target;if(t.dataset.f)setF(+t.dataset.g,t.dataset.f,t.value)});
+$('#pp').addEventListener('click',e=>{const b=e.target.closest('[data-dk]');if(b)delK(+b.dataset.dk);if(e.target.closest('#dz'))detectZip()});
+// ====== KODE POS ======
+const NZ=s=>String(s).toLowerCase().replace(/\(.*?\)/g,'').replace(/[^a-z]/g,'').replace(/oh/g,'o').replace(/ou|oo/g,'o').replace(/uu/g,'u');
+const SW1=new Set(['ken','to','fu']),SW2=new Set(['shi','ku','gun','machi','cho','mura','son']);
+function names(t,SW){const w=String(t).toLowerCase().replace(/\(.*?\)/g,'').split(/[^a-z]+/).filter(Boolean),v=[NZ(w.join(''))];
+ while(w.length>1&&SW.has(w[w.length-1]))w.pop();v.push(NZ(w.join('')));const gi=w.lastIndexOf('gun');if(gi>=0&&gi<w.length-1)v.push(NZ(w.slice(gi+1).join('')));
+ return[...new Set(v)].filter(x=>x.length>=3)}
+function zipBuild(rows){const P=new Map(),nc=new Map();
+ for(const r of rows){const ro=r&&r[3];if(!ro||!/^\d{3}-\d{4}$/.test(String(r[0])))continue;const pt=String(ro).split(', ');if(pt.length<3)continue;
+  const pf=pt[pt.length-1],ct=pt[pt.length-2],ar=NZ(pt.slice(0,-2).join(', '));let p=P.get(pf);if(!p){p={v:names(pf,SW1),c:new Map()};P.set(pf,p)}
+  let c=p.c.get(ct);if(!c){c={v:names(ct,SW2),rows:[]};p.c.set(ct,c)}c.rows.push([ar,r[0],r[2],String(r[1]).includes('以下に掲載がない場合')])}
+ return P}
+function zipFind(P,a){const inp=NZ(a);let best=null,ic=inp;
+ let ps=[...P.values()].filter(p=>p.v.some(x=>inp.includes(x)));
+ if(!ps.length)ps=[...P.values()];
+ for(const p of ps)for(const c of p.c.values()){const m=c.v.filter(x=>(x.length>=4||x===c.v[0])&&ic.includes(x)).sort((x,y)=>y.length-x.length)[0];if(m&&(!best||m.length>best.l))best={l:m.length,m,c}}
+ if(!best)return null;const ia=ic.replace(best.m,'');let ar=null;
+ for(const r of best.c.rows)if(r[0].length>=3&&ia.includes(r[0])&&(!ar||r[0].length>ar[0].length))ar=r;
+ if(ar)return{z:ar[1],j:ar[2],conf:'area'};const g=best.c.rows.find(r=>r[3])||best.c.rows[0];return{z:g[1],j:g[2],conf:'kota'}}
+async function loadZip(set){if(ZD)return ZD;
+ const r=await fetch(ZIPFILE);if(!r.ok)throw Error('file Excel kode pos belum ditemukan. Taruh '+ZIPFILE+' satu folder dengan HTML ini di GitHub Pages (tidak jalan bila HTML dibuka langsung dari komputer).');
+ const L=+r.headers.get('content-length')||0,rd=r.body.getReader(),ch=[];let n=0;
+ for(;;){const{done,value}=await rd.read();if(done)break;ch.push(value);n+=value.length;if(L)await set(Math.min(55,Math.round(n/L*55)))}
+ const buf=new Uint8Array(n);let o=0;ch.forEach(c=>{buf.set(c,o);o+=c.length});await set(60);await sleep(30);
+ const wb=XLSX.read(buf,{type:'array',sheets:'Wilayah'});await set(80);
+ const rows=XLSX.utils.sheet_to_json(wb.Sheets['Wilayah'],{header:1,raw:true});await set(90);ZD=zipBuild(rows);return ZD}
+async function detectZip(){const d=S.k[0]&&S.k[0].d;if(!d||!d.alamat){ZM='Alamat di Jepang masih kosong.';renderParams();return}
+ await busy('Mendeteksi kode pos…',async set=>{try{const P=await loadZip(set),r=zipFind(P,d.alamat);
+  if(r){setF(0,'zip','〒'+r.z);ZM=`Terdeteksi 〒${r.z} (${r.conf=='area'?'cocok sampai area':'cocok sampai kota, mohon cek ulang'}): ${r.j}`}else ZM='Alamat tidak ditemukan di data. Isi kode pos manual.'}
+  catch(e){ZM='Gagal deteksi: '+e.message}});renderParams()}
+// ====== PREVIEW ======
 function ap(d,t){const s=d.style;s.left=t.x+'px';s.top=t.y+'px';s.width=t.w+'px';s.height=t.h+'px';s.fontFamily=F[t.f];s.fontSize=t.z+'px';s.color=t.c;
  s.fontWeight=t.b?700:400;s.textAlign={l:'left',c:'center',r:'right'}[t.al];s.border=t.bd?'1px solid #000':'0';s.alignItems=t.m?'center':'flex-start'}
 function el(t,p,i){const d=document.createElement('div');d.className='it';d.dataset.p=p;d.dataset.i=i;d.innerHTML='<span class="tx"></span><i class="rs"></i>';d.firstChild.textContent=t.s;ap(d,t);return d}
 function render(){const R=$('#prev');R.innerHTML='';sc=Math.min(1,(R.clientWidth-4)/W);lw=innerWidth;
  S.pages.forEach((p,pi)=>{const w=document.createElement('div');w.className='pw';
-  w.innerHTML=`<div class="ph"><b>Halaman ${pi+1} · Kaisha ${pi+1}</b><button data-del="${pi}">Hapus</button></div><div class="ps" style="width:${W*sc}px;height:${H*sc}px"><div class="pg" style="transform:scale(${sc})"><i class="gx"></i><i class="gy"></i></div></div>`;
+  w.innerHTML=`<div class="ph"><b>Halaman ${pi+1}</b></div><div class="ps" style="width:${W*sc}px;height:${H*sc}px"><div class="pg" style="transform:scale(${sc})"><i class="gx"></i><i class="gy"></i></div></div>`;
   const pg=w.querySelector('.pg');p.items.forEach((t,i)=>pg.appendChild(el(t,pi,i)));R.appendChild(w)});
- document.body.classList.toggle('ed',edit);sel=null;$('#tb').disabled=true;
- $('#cnt').textContent=`(${S.pages.length}/5)`;$('#add').disabled=S.pages.length>=5;
- document.querySelectorAll('[data-x]').forEach(b=>b.disabled=!S.pages.length)}
-function save(){clearTimeout(tm);tm=setTimeout(()=>{try{localStorage.setItem(K,JSON.stringify({S,fn:$('#fn').value}));$('#sv').textContent='Tersimpan otomatis ✓'}catch(e){$('#sv').textContent='Penyimpanan otomatis tidak tersedia'}},300)}
+ document.body.classList.toggle('ed',edit);sel=null;$('#tb').disabled=true;const n=Object.keys(S.k).length;
+ $('#cnt').textContent=`(${n}/5)`;$('#add').disabled=n>=5;
+ document.querySelectorAll('[data-x]').forEach(b=>b.disabled=!S.pages.length);renderParams()}
+function save(){dirty=true;clearTimeout(tm);tm=setTimeout(()=>{if(!U)return;try{localStorage.setItem(K+U,JSON.stringify({S,fn:$('#fn').value}));$('#sv').textContent='Tersimpan otomatis di perangkat ✓'}catch(e){$('#sv').textContent='Penyimpanan perangkat tidak tersedia'}},300);
+ clearTimeout(ct);ct=setTimeout(cloud,45000)}
+async function cloud(type='auto',name='Otomatis'){if(!U||!TK||!S.pages.length)return;
+ try{await api('hsave',{type,name,data:JSON.stringify({S,fn:$('#fn').value})});dirty=false;$('#sv').textContent=(type=='auto'?'Riwayat otomatis':'Riwayat')+' tersimpan '+new Date().toLocaleTimeString('id-ID')+' ✓'}catch(e){$('#sv').textContent='Cadangan riwayat gagal: '+e.message}}
 function pick(d){document.querySelectorAll('.it.sel').forEach(x=>x.classList.remove('sel'));if(!d){sel=null;$('#tb').disabled=true;return}
  d.classList.add('sel');sel={p:+d.dataset.p,i:+d.dataset.i};const t=T();$('#tb').disabled=false;
  $('#tf').value=t.f;$('#tz').value=+(t.z*.75).toFixed(1);$('#tc').value=t.c;$('#ta').value=t.al}
@@ -136,24 +231,24 @@ addEventListener('pointermove',e=>{if(!dr)return;const{t,d}=dr,dx=(e.clientX-dr.
 addEventListener('pointerup',()=>{if(!dr)return;dr.pg.querySelectorAll('.gx,.gy').forEach(g=>g.style.display='none');dr=null;save()});
 $('#prev').addEventListener('dblclick',e=>{const d=e.target.closest('.it');if(!d)return;const x=d.firstChild;x.contentEditable=true;x.focus();getSelection().selectAllChildren(x);
  x.onblur=()=>{x.contentEditable=false;S.pages[d.dataset.p].items[d.dataset.i].s=x.innerText.replace(/\n$/,'');save()}});
-$('#prev').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b&&confirm('Hapus halaman ini?')){S.pages.splice(+b.dataset.del,1);render();save()}});
-$('#add').onclick=()=>$('#md').classList.add('on');$('#cn').onclick=()=>$('#md').classList.remove('on');
+$('#rst').onclick=()=>{if(!confirm('Mulai dari awal? Semua halaman dan isian yang sedang dibuka akan dihapus. Riwayat di Google Spreadsheet tetap aman.'))return;
+ clearTimeout(tm);clearTimeout(ct);S={k:{},pages:[]};ZM='';dirty=false;edit=true;$('#fn').value='';try{localStorage.removeItem(K+U)}catch(e){}render();$('#sv').innerHTML='&nbsp;';$('#md').classList.add('on')};
+// ====== TAMBAH KAISHA ======
+$('#add').onclick=()=>$('#md').classList.add('on');
+document.addEventListener('click',e=>{const c=e.target.closest('[data-close]');if(c)c.closest('.ov').classList.remove('on')});
 $('#mk').onclick=async()=>{const r=$('#raw').value;if(r.trim().length<20){alert('Tempel dulu pesan WhatsApp-nya ya.');return}
- $('#md').classList.remove('on');
- await busy('Memproses pesan…',async set=>{await set(25);const d=parse(r);await set(55);S.pages.push({raw:r,items:build(d)});await set(80);render();await set(95);save()});
- $('#raw').value='';setTimeout(()=>{const p=document.querySelectorAll('.pw');p[p.length-1]&&p[p.length-1].scrollIntoView({behavior:'smooth'})},100)};
+ $('#md').classList.remove('on');const first=!S.pages.length;let ok=false;
+ await busy('Memproses pesan…',async set=>{await set(30);ok=addK(r);await set(70);render();await set(95);save()});
+ if(!ok)return;$('#raw').value='';
+ if(first&&$('#az').checked)await detectZip();
+ setTimeout(()=>{const p=document.querySelectorAll('.pw');p[p.length-1]&&p[p.length-1].scrollIntoView({behavior:'smooth'})},100)};
+// ====== UNDUH ======
 const dl=async(b,n)=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();a.remove();await sleep(400)};
-const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
-function docHtml(){const pt=v=>(v*.75).toFixed(1)+'pt';
- let h='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>@page{size:595.3pt 841.9pt;margin:0}body{margin:0}.pgx{position:relative;width:595.3pt;height:841.9pt;page-break-after:always}</style></head><body>';
- S.pages.forEach(p=>{h+='<div class="pgx">'+p.items.map(t=>{const ln=t.s.split('\n').length,pad=t.m?Math.max(0,(t.h-ln*t.z*1.15)/2)*.75:.75;
-  return`<div style="position:absolute;mso-position-horizontal-relative:page;mso-position-vertical-relative:page;left:${pt(t.x)};top:${pt(t.y)};width:${pt(t.w)};height:${pt(t.h)};border:${t.bd?'.75pt solid #000':'none'};padding:${pad.toFixed(1)}pt 3pt 0 3pt;font-family:'${FN[t.f]}';font-size:${pt(t.z)};color:${t.c};font-weight:${t.b?700:400};text-align:${{l:'left',c:'center',r:'right'}[t.al]};line-height:115%">${esc(t.s).replace(/\n/g,'<br>')}</div>`}).join('')+'</div>'});
- return h+'</body></html>'}
 async function mkDocx(){const E=v=>Math.round(v*9525),tw=v=>Math.round(v*15),x=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');let id=1;
  const box=t=>{const ln=t.s.split('\n'),sz=Math.round(t.z*1.5),fo=FN[t.f],n=id++,
   ps=ln.map(l=>`<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="${tw(t.z*1.15)}" w:lineRule="exact"/><w:jc w:val="${{l:'left',c:'center',r:'right'}[t.al]}"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="${fo}" w:hAnsi="${fo}" w:eastAsia="MS Mincho" w:cs="${fo}"/>${t.b?'<w:b/>':''}<w:color w:val="${t.c.slice(1)}"/><w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/></w:rPr><w:t xml:space="preserve">${x(l)}</w:t></w:r></w:p>`).join('');
   return`<w:r><w:drawing><wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="${n}" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="page"><wp:posOffset>${E(t.x)}</wp:posOffset></wp:positionH><wp:positionV relativeFrom="page"><wp:posOffset>${E(t.y)}</wp:posOffset></wp:positionV><wp:extent cx="${E(t.w)}" cy="${E(t.h)}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapNone/><wp:docPr id="${n}" name="Teks ${n}"/><wp:cNvGraphicFramePr/><a:graphic><a:graphicData uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"><wps:wsp><wps:cNvSpPr txBox="1"/><wps:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${E(t.w)}" cy="${E(t.h)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/>${t.bd?'<a:ln w="9525"><a:solidFill><a:srgbClr val="000000"/></a:solidFill></a:ln>':'<a:ln><a:noFill/></a:ln>'}</wps:spPr><wps:txbx><w:txbxContent>${ps}</w:txbxContent></wps:txbx><wps:bodyPr rot="0" vert="horz" wrap="square" lIns="38100" tIns="9525" rIns="38100" bIns="9525" anchor="${t.m?'ctr':'t'}" anchorCtr="0"><a:noAutofit/></wps:bodyPr></wps:wsp></a:graphicData></a:graphic></wp:anchor></w:drawing></w:r>`};
- const body=S.pages.map((p,i)=>`<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr>${p.items.map(box).join('')}</w:p>`+(i<S.pages.length-1?'<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr><w:r><w:br w:type="page"/></w:r></w:p>':'')).join('');
+ const sp='<w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr>',body=S.pages.map((p,i)=>`<w:p>${sp}${p.items.map(box).join('')}</w:p>`+(i<S.pages.length-1?`<w:p>${sp}<w:r><w:br w:type="page"/></w:r></w:p>`:'')).join('');
  const z=new JSZip(),R='http://schemas.openxmlformats.org/';
  z.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="${R}package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`);
  z.file('_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="${R}package/2006/relationships"><Relationship Id="rId1" Type="${R}officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
@@ -169,13 +264,47 @@ async function exp(type){const fn=($('#fn').value.trim()||'Surat_Nenkin').replac
   else{const cs=[];for(let i=0;i<S.pages.length;i++){cs.push(await cap(i));await set(Math.round(70*(i+1)/S.pages.length))}
    if(type=='jpg')for(let i=0;i<cs.length;i++)await dl(await new Promise(r=>cs[i].toBlob(r,'image/jpeg',.95)),fn+(cs.length>1?'-'+(i+1):'')+'.jpg');
    else{const P=new jspdf.jsPDF({unit:'pt',format:'a4'});cs.forEach((c,i)=>{if(i)P.addPage();P.addImage(c.toDataURL('image/jpeg',.95),'JPEG',0,0,595.28,841.89)});P.save(fn+'.pdf');await sleep(400)}}
-  await set(90);await dl(new Blob([JSON.stringify({S,fn})],{type:'application/json'}),fn+'.json')});
+  await set(90)});
  document.body.classList.toggle('ed',was)}
 document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>exp(b.dataset.x));
 $('#sj').onclick=()=>dl(new Blob([JSON.stringify({S,fn:$('#fn').value})],{type:'application/json'}),($('#fn').value.trim()||'Surat_Nenkin')+'.json');
 $('#fn').oninput=save;$('#ld0').onclick=()=>$('#fj').click();
-$('#fj').onchange=async e=>{const f=e.target.files[0];if(!f)return;await busy('Memuat sesi…',async set=>{await set(40);const j=JSON.parse(await f.text());S=j.S||j;$('#fn').value=j.fn||'';await set(80);render();save()});e.target.value=''};
+function loadSess(j){S=j.S||j;S.k=S.k||{};$('#fn').value=j.fn||'';render();save()}
+$('#fj').onchange=async e=>{const f=e.target.files[0];if(!f)return;await busy('Memuat sesi…',async set=>{await set(40);loadSess(JSON.parse(await f.text()));await set(80)});e.target.value=''};
 let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(innerWidth!=lw&&!dr)render()},200)});
-busy('Menyiapkan dashboard…',async set=>{await set(20);try{const j=JSON.parse(localStorage.getItem(K)||'null');if(j){S=j.S;$('#fn').value=j.fn||''}}catch(e){}
- await set(50);await Promise.race([document.fonts.ready,sleep(2500)]);await set(85);render()}).then(()=>{if(!S.pages.length)$('#md').classList.add('on')});
+// ====== LOGIN & AKUN ======
+const show=v=>{$('#v1').hidden=v!=1;$('#v2').hidden=v!=2;$('#lm').textContent=v==1?'Masuk dengan akun AI, MT, atau SN.':'Reset password lewat email.'};
+function startApp(){$('#lg').classList.remove('on');$('#uc').hidden=false;$('#un').textContent=U;
+ try{const j=JSON.parse(localStorage.getItem(K+U)||'null');S=j&&j.S?j.S:{k:{},pages:[]};S.k=S.k||{};$('#fn').value=(j&&j.fn)||''}catch(e){S={k:{},pages:[]}}
+ render();if(!S.pages.length)$('#md').classList.add('on')}
+$('#go').onclick=async()=>{const u=$('#lu').value.trim(),p=$('#pw').value;if(!u||!p){$('#lm').textContent='Isi username dan password.';return}
+ let ok=false;await busy('Masuk…',async()=>{const j=await api('login',{u,p});TK=j.token;U=j.user;localStorage.setItem('nk_tk',JSON.stringify({tk:TK}));ok=true});
+ if(ok){$('#pw').value='';startApp()}};
+$('#qa').onclick=e=>{const b=e.target.closest('[data-q]');if(b){$('#lu').value=b.dataset.q;$('#pw').focus()}};
+$('#pw').onkeydown=e=>{if(e.key=='Enter')$('#go').click()};
+$('#fg').onclick=()=>{$('#fu').value=$('#lu').value;show(2)};$('#bk').onclick=()=>show(1);
+$('#sc').onclick=()=>busy('Mengirim kode…',async()=>{const j=await api('forgot',{u:$('#fu').value.trim()});alert(j.msg)});
+$('#rs').onclick=()=>busy('Mengatur password…',async()=>{await api('reset',{u:$('#fu').value.trim(),code:$('#fc').value.trim(),np:$('#fp').value});alert('Password berhasil diganti. Silakan masuk.');show(1)});
+$('#bo').onclick=async()=>{if(dirty&&!confirm('Ada perubahan yang belum dicadangkan. Tetap keluar?'))return;try{await api('out')}catch(e){}
+ TK=null;U=null;localStorage.removeItem('nk_tk');S={k:{},pages:[]};$('#am').classList.remove('on');render();$('#uc').hidden=true;$('#lg').classList.add('on');show(1)};
+$('#ba').onclick=()=>{$('#ai').textContent='Masuk sebagai '+U+'. '+(EM?'Email terdaftar: '+EM:'Email belum diisi, isi dulu agar bisa reset password.');$('#am').classList.add('on')};
+let EM='';
+const acc=(btn,fn,msg)=>$(btn).onclick=()=>busy('Memproses…',async()=>{const p=$('#cp').value;if(!p)throw Error('Isi password saat ini dulu.');await fn(p);alert(msg);$('#cp').value=''});
+acc('#b1',async p=>{const nu=$('#nu').value.trim(),j=await api('setuser',{p,nu}),old=U;TK=j.token;U=j.user;localStorage.setItem('nk_tk',JSON.stringify({tk:TK}));
+ const v=localStorage.getItem(K+old);if(v)localStorage.setItem(K+U,v);$('#un').textContent=U},'Username berhasil diganti.');
+acc('#b2',p=>api('setpass',{p,np:$('#np').value}),'Password berhasil diganti.');
+acc('#b3',async p=>{const j=await api('setmail',{p,em:$('#em').value.trim()});EM=j.email},'Email tersimpan.');
+// ====== RIWAYAT ======
+async function histList(){const h=$('#hl');h.textContent='Memuat…';
+ try{const j=await api('hlist');h.innerHTML=j.items.length?j.items.map(i=>`<div class="hi"><div><span class="tg">${i.type=='auto'?'otomatis':'manual'}</span><b>${esc(i.name)}</b><div class="hint" style="margin:0">${new Date(i.t).toLocaleString('id-ID')}</div></div><div class="row"><button class="bt sm" data-hl="${i.id}">Muat</button><button class="bt g sm" data-hd="${i.id}">Hapus</button></div></div>`).join(''):'<p class="hint">Belum ada riwayat.</p>'}
+ catch(e){h.textContent='Gagal memuat: '+e.message}}
+$('#bh').onclick=()=>{$('#hm').classList.add('on');histList()};
+$('#hs').onclick=async()=>{await busy('Menyimpan riwayat…',async()=>{await api('hsave',{type:'manual',name:$('#hn').value.trim()||('Manual '+new Date().toLocaleString('id-ID')),data:JSON.stringify({S,fn:$('#fn').value})});dirty=false});$('#hn').value='';histList()};
+$('#hl').addEventListener('click',async e=>{const l=e.target.closest('[data-hl]'),d=e.target.closest('[data-hd]');
+ if(l&&confirm('Muat riwayat ini? Sesi yang sedang dibuka akan diganti.')){await busy('Memuat riwayat…',async set=>{await set(30);const j=await api('hget',{id:l.dataset.hl});await set(70);loadSess(JSON.parse(j.data))});$('#hm').classList.remove('on')}
+ if(d&&confirm('Hapus riwayat ini?')){await busy('Menghapus…',()=>api('hdel',{id:d.dataset.hd}));histList()}});
+// ====== MULAI ======
+(async()=>{await busy('Menyiapkan dashboard…',async set=>{await set(30);await Promise.race([document.fonts.ready,sleep(2500)]);await set(60);
+ const st=JSON.parse(localStorage.getItem('nk_tk')||'null');if(st&&API){try{TK=st.tk;const j=await api('me');U=j.user;EM=j.email||''}catch(e){TK=null;U=null}}await set(90)});
+ if(U)startApp();else{$('#lg').classList.add('on');if(!API)$('#lm').textContent='URL Apps Script belum diisi di file HTML (baris const API).'}})();
 </script></body></html>
