@@ -72,12 +72,17 @@ fieldset{border:0;padding:0;margin:0}fieldset:disabled{opacity:.45}
 .rl.h{left:0;right:0;top:0;height:14px;cursor:ns-resize;border-bottom:1px solid #c5ccf0;background-image:repeating-linear-gradient(90deg,#9aa3d3 0 1px,transparent 1px 16px)}
 .rl.v{top:0;bottom:0;left:0;width:14px;cursor:ew-resize;border-right:1px solid #c5ccf0;background-image:repeating-linear-gradient(0deg,#9aa3d3 0 1px,transparent 1px 16px)}
 .hg .gl,.hg .rl,.nx .gl,.nx .rl{display:none!important}
+.fh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.fld .sw{display:inline-flex;flex:none}
+.sw button{border:1px solid var(--bd);background:var(--cd);color:var(--tx);padding:2px 9px;font:inherit;font-size:11px;font-weight:600;cursor:pointer}
+.sw button:first-child{border-radius:7px 0 0 7px;border-right:0}.sw button:last-child{border-radius:0 7px 7px 0}
+.sw button.on{background:var(--ac);border-color:var(--ac);color:#fff}
 </style></head><body>
 <header class="hd"><div><div class="brand"><img class="logo" src="https://marketingexata.github.io/suratTA/EXATA.png" alt="EXATA"><div><h1>Surat Pengganti Buku Nenkin</h1><p>Tempel pesan WhatsApp → otomatis jadi surat siap unduh.</p></div></div>
  <div class="row" id="uc" hidden><button class="bt g" id="bh" title="Simpan dan buka riwayat sesi">🕘 Riwayat</button><button class="bt g" id="ba" title="Profil: ganti username, password, email, keluar">👤 <span id="un"></span></button></div></div></header>
 <div class="wrap">
 <aside>
- <div class="cd"><h3><span class="n">1</span>Tempel pesan WA</h3><p class="hint">Pesan pertama = data pemohon + kaisha 1. Pesan berikutnya (+ Kaisha) hanya menambah tabel perusahaannya. Maksimal 5.</p>
+ <div class="cd"><h3><span class="n">1</span>Tempel pesan WA</h3><p class="hint">Satu pesan boleh berisi data pemohon + semua kaisha (kaisha 1, 2, 3, dst): tabel tiap kaisha dibuat otomatis. Tombol + Kaisha dipakai bila ada pesan tambahan. Maksimal 5.</p>
   <div class="row"><button class="bt" id="add" title="Tempel pesan WhatsApp berikutnya">+ Kaisha <span id="cnt">(0/5)</span></button>
   <button class="bt g" id="ld0" title="Buka file .json hasil unduhan">Muat file sesi</button><button class="bt g" id="rst" title="Hapus semua isian dan mulai dari nol">Mulai dari awal</button><input type="file" id="fj" accept=".json" hidden></div></div>
  <div class="cd"><h3><span class="n">2</span>Rapikan di preview</h3>
@@ -85,8 +90,8 @@ fieldset{border:0;padding:0;margin:0}fieldset:disabled{opacity:.45}
   </div>
  <div class="cd"><details id="pr"><summary><span class="n">3</span>Cek parameter hasil baca pesan</summary>
   <p class="hint">Isi hasil pembacaan pesan WA. Ubah di sini dan preview ikut berubah. Langkah ini boleh dilewati.</p>
-  <label class="hint"><input type="checkbox" id="az" checked> Deteksi kode pos otomatis untuk alamat di Jepang dan alamat tiap perusahaan</label><div id="pp"></div></details></div>
- <div class="cd"><h3><span class="n">4</span>Unduh</h3><p class="hint">Hasil unduhan sama dengan preview. Simpan sesi lewat tombol “Simpan file sesi” atau menu Riwayat.</p>
+  <label class="hint"><input type="checkbox" id="az" checked> Deteksi kode pos dan ubah alamat romaji ke bahasa Jepang otomatis (butuh file Excel kode pos di folder yang sama)</label><div id="pp"></div></details></div>
+ <div class="cd"><h3><span class="n">4</span>Unduh</h3><p class="hint">Nama file, autosave, dan riwayat otomatis memakai nama lengkap dari pesan WA. Boleh diubah di kolom ini.</p>
   <input id="fn" placeholder="Nama file" style="width:100%;margin-bottom:8px">
   <div class="row"><button class="bt" data-x="doc" title="Format Word">Word</button><button class="bt" data-x="jpg" title="Gambar JPG per halaman">JPG</button><button class="bt" data-x="pdf" title="PDF semua halaman">PDF</button><button class="bt g" id="sj" title="Simpan data sesi saja">Simpan file sesi</button></div>
   <p class="hint" id="sv">&nbsp;</p></div>
@@ -115,7 +120,7 @@ fieldset{border:0;padding:0;margin:0}fieldset:disabled{opacity:.45}
  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="bt g" data-close>Batal</button><button class="bt" id="mk">Buat</button></div></div></div>
 
 <div class="ov" id="hm"><div class="md"><h3 style="margin-top:0">Riwayat sesi</h3><p class="hint">Otomatis tersimpan ke Google Spreadsheet milik akunmu (maks. 5 terakhir). Simpan manual untuk titik penting. Memuat riwayat mengembalikan seluruh template dan isian sesi itu.</p>
- <div class="row"><input id="hn" placeholder="Nama simpanan (opsional)" style="flex:1"><button class="bt" id="hs">Simpan manual</button></div><div id="hl"></div>
+ <div class="row"><input id="hn" placeholder="Nama simpanan (kosong = nama file)" style="flex:1"><button class="bt" id="hs">Simpan manual</button></div><div id="hl"></div>
  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="bt g" data-close>Tutup</button></div></div></div>
 
 <div class="ov" id="am"><div class="md"><h3 style="margin-top:0">Akun saya</h3><p class="hint" id="ai"></p>
@@ -144,20 +149,43 @@ async function api(a,d={}){if(!API)throw Error('URL Apps Script belum diisi (bar
  const r=await fetch(API,{method:'POST',body:JSON.stringify({a,t:TK,...d})}),j=await r.json();if(!j.ok)throw Error(j.msg||'Gagal');return j}
 // ====== PARSER ======
 const fmtN=s=>{const d=String(s).replace(/\D/g,'');return d.length>4?d.slice(0,4)+'-'+d.slice(4):d};
-function parse(r){
- r=r.replace(/[\u2060\u200b\u200e\u200f\u00a0]/g,' ');
- const g=re=>{const m=r.match(re);return m?m[1].trim():''},p=n=>String(n).padStart(2,'0');
- const lm=r.match(/tgl lahir\s*:\s*(\d{1,2})\D+(\d{1,2})\D+(\d{4})/i);
+const CJK=/[\u3040-\u30ff\u3400-\u9fff\uff00-\uffef]/,ZR=/〒\s*\d{3}-?\d{4}/,ZE=/〒\s*\d{3}-?\d{4}\s*$/;
+const M3={jan:1,feb:2,peb:2,mar:3,apr:4,mei:5,may:5,jun:6,jul:7,agu:8,agt:8,ags:8,aug:8,sep:9,okt:10,oct:10,nov:11,nop:11,des:12,dec:12};
+const p2=n=>String(n).padStart(2,'0'),fd=o=>`${o.y} 年 ${p2(o.m)} 月 ${p2(o.d)} 日`;
+function chkD(y,m,d){if(y<1900||y>2100||m<1||m>12||d<1)return null;return d>new Date(y,m,0).getDate()?null:{y,m,d}}
+// tanggal fleksibel: 25juni1996, 25 Juni 1996, 25 JUNI 1996, 25-06-1996, 25/6/1996, 25061996, 1996-06-25, 25 jun 96 ...
+function pDate(s){s=String(s||'').toLowerCase().replace(/[\u2060\u200b\u00a0]/g,' ').trim();let m;
+ if(m=s.match(/^(\d{2})(\d{2})(\d{4})$/))return chkD(+m[3],+m[2],+m[1]);
+ if(m=s.match(/(\d{1,2})\s*(?:st|nd|rd|th)?[\s.,\-\/']*([a-z]{3,12})\.?[\s.,\-\/']*(\d{4}|\d{2})(?!\d)/)){const mo=M3[m[2].slice(0,3)];if(mo){let y=+m[3];if(m[3].length==2)y+=y>30?1900:2000;return chkD(y,mo,+m[1])}}
+ if(m=s.match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})(?!\d)/))return chkD(+m[1],+m[2],+m[3]);
+ if(m=s.match(/(\d{1,2})\D+(\d{1,2})\D+(\d{4})/))return chkD(+m[3],+m[2],+m[1]);
+ return null}
+const pPart=s=>pDate(String(s).replace(/\b(?:tgl|tanggal|bln|bulan|th|thn|tahun)\b/gi,' ').replace(/[:|]/g,' '));
+const fixZ=z=>z.replace(/\s/g,'').replace(/〒(\d{3})-?(\d{4})/,'〒$1-$2');
+function pKaisha(b){const g=re=>{const m=b.match(re);return m?m[1].trim():''};
  let pn=g(/Nama Perusahaan\s*:[ \t]*(.*)/i),kj='',rj=pn;const m=pn.match(/^(.*?)\s*[（(](.+?)[）)]\s*$/);
  if(m){if(/[\u3000-\u9fff]/.test(m[1])){kj=m[1];rj=m[2]}else{rj=m[1]}}
- let ad=(r.match(/Alamat Perusahaan\s*:([\s\S]*?)(?:\n[^\n]*No\s*tlf|$)/i)||[,''])[1];
- const zr=/〒\s*\d{3}-?\d{4}/,z=(ad.match(zr)||[''])[0].replace(/\s/g,'');
- ad=ad.replace(zr,'').replace(/\s*\n\s*/g,' ').trim().toUpperCase();
- const w=r.match(/tgl\s*:\s*(\d+)\s*bln\s*:\s*(\d+)\s*th\s*:\s*(\d{4})\s*sampai\s*tgl\s*:\s*(\d+)\s*bln\s*:\s*(\d+)\s*th\s*:\s*(\d{4})/i);
- return{nen:fmtN(g(/NENKIN JIKA TAU\s*:[ \t]*([\d\- ]*)/i)),nama:g(/Nama Lengkap\s*:[ \t]*(.*)/i).toUpperCase(),
-  lahir:lm?`${lm[3]} 年 ${p(lm[2])} 月 ${p(lm[1])} 日`:'',alamat:g(/alamat apato\s*:[ \t]*(.*)/i).toUpperCase(),zip:'',
-  pulang:'2024 年 12 月 16 日',pn:rj.trim().toUpperCase()+(kj?'\n'+kj:''),ad:ad+(z?'\n'+z:''),tel:g(/No\s*tlf perusahaan\s*:[ \t]*(.*)/i),
-  masa:w?`${w[3]} 年 ${p(w[2])} 月 ${p(w[1])} 日 – ${w[6]} 年 ${p(w[5])} 月 ${p(w[4])} 日`:'',jenis:'KOUSEI NENKIN/ 厚生年金保険'}}
+ let ad=(b.match(/Alamat Perusahaan\s*:([\s\S]*?)(?=\n[^\n]*(?:No\s*tlf|No\s*telp|Masa\s*kerja|Bidang\s*kerja|Pembayaran)|$)/i)||[,''])[1];
+ let z=(ad.match(ZR)||[''])[0];ad=ad.replace(ZR,'');
+ if(!z){const m2=ad.match(/^\s*(\d{3}-\d{4})(?!\d)/);if(m2){z='〒'+m2[1];ad=ad.replace(m2[0],'')}}
+ z=fixZ(z);ad=ad.replace(/\s*\n\s*/g,' ').replace(/\s*,\s*/g,', ').replace(/\s+/g,' ').trim().toUpperCase();
+ let ml=(b.match(/masa\s*kerja([^\n]*)/i)||[])[1];if(ml===undefined)ml=(b.match(/([^\n]*sampai[^\n]*)/i)||[])[1]||'';
+ const hv=ml.split(/\bsampai\b|\bs\/d\b|\bhingga\b|[–—]|\s-\s/i),a=pPart(hv[0]),e=hv.length>1?pPart(hv[1]):null,
+  rest=(hv[1]||'').replace(/[:|]/g,' ').replace(/\b(?:tgl|tanggal|bln|th|thn)\b/gi,' ').replace(/\s+/g,' ').trim().toUpperCase(),en=e?fd(e):rest,jp=CJK.test(ad);
+ return{pn:rj.trim().toUpperCase()+(kj?'\n'+kj:''),ad:ad+(z?'\n'+z:''),adRo:jp?'':ad,adJp:jp?ad:'',adM:jp?'jp':'ro',
+  tel:g(/No\s*(?:tlf|telp|telepon)\s*perusahaan\s*:[ \t]*(.*)/i),masa:a?fd(a)+(en?' – '+en:''):'',jenis:'KOUSEI NENKIN/ 厚生年金保険'}}
+function parse(r){
+ r=r.replace(/[\u2060\u200b\u200e\u200f\u00a0]/g,' ').replace(/\r/g,'');
+ const L=r.split('\n'),st=[];L.forEach((l,i)=>{if(/Nama\s*Perusahaan\s*:/i.test(l))st.push(i)});
+ const head=L.slice(0,st.length?st[0]:L.length).join('\n'),
+  blk=st.map((x,i)=>L.slice(x,i+1<st.length?st[i+1]:L.length).join('\n').replace(/(?:\n[ \t|]*kaisha\s*\d*[ \t|]*)+\s*$/i,''));
+ if(!blk.length)blk.push('');
+ const g=re=>{const m=head.match(re);return m?m[1].trim():''};
+ let nen='';for(const l of r.split('\n')){const m=l.match(/nenkin[^:\n]*:[ \t]*(.*)$/i);if(m&&!/pembayaran|jenis/i.test(l)){const dg=m[1].replace(/\D/g,'');if(dg.length>=4){nen=fmtN(dg);break}}}
+ const namaRaw=g(/Nama Lengkap\s*:[ \t]*(.*)/i).replace(/\s+/g,' '),lt=g(/(?:tgl|tanggal)\s*lahir\s*:?[ \t]*(.*)/i),ld=pDate(lt),
+  al=g(/alamat\s*(?:apato|apartemen|apartment|tinggal)\s*:[ \t]*(.*)/i),au=al.replace(/\s*,\s*/g,', ').replace(/\s+/g,' ').trim().toUpperCase(),aj=CJK.test(au);
+ return{nen,nama:namaRaw.toUpperCase(),namaRaw,lahir:ld?fd(ld):lt,alamat:au,alamatRo:aj?'':au,alamatJp:aj?au:'',alamatM:aj?'jp':'ro',zip:'',
+  pulang:'2024 年 12 月 16 日',ks:blk.map(pKaisha)}}
 // ====== TEMPLATE ======
 const mk=(k,x,y,w,h,s,o)=>({k,x,y,w,h,ox:x,oy:y,s,f:'t',z:14,c:'#000000',b:0,i:0,tx:0,ty:0,al:'l',bd:0,m:0,...o});
 const addr=d=>d.alamat+(d.zip?'\n'+d.zip:'');
@@ -176,24 +204,56 @@ function company(g,d,y0){const I=[],c=g?[0,0,0,0]:[0,35,68,93],p=(k,x,y,w,h,s,o)
  yc=[0,36,90,126,162],hc=[36,54,36,36,36];
  C.forEach((r,i)=>{p('cl'+i,76,c[3]+yc[i],240,hc[i]+1,r[0],{bd:1});p('cv'+i,315,c[3]+yc[i],452,hc[i]+1,r[1],{bd:1,m:i==3})});return I}
 const SL=g=>g==1?[0,802]:[1,100+(g-2)*215];
-function addK(raw){const d=parse(raw);
- if(!S.pages.length){S.pages=[{items:[...applicant(d),...company(0,d,494)]}];S.k={0:{raw,d}};return 0}
- let g=1;while(S.k[g])g++;if(g>4){alert('Maksimal 5 kaisha.');return -1}
- const c={pn:d.pn,ad:d.ad,tel:d.tel,masa:d.masa,jenis:d.jenis},[pi,y]=SL(g);
- while(S.pages.length<=pi)S.pages.push({items:[]});S.pages[pi].items.push(...company(g,c,y));S.k[g]={raw,d:c};return g}
+const NY=257,NS=36;
+// tampilkan/sembunyikan baris "Nomor Nenkin" dan rapatkan baris di bawahnya
+function nenToggle(show){const P=S.pages[0];if(!P)return false;const has=P.items.some(t=>t.k==='l0');if(!!show===has)return false;
+ if(!show){P.items=P.items.filter(t=>t.k!=='l0'&&t.k!=='v0');P.items.forEach(t=>{if(t.y>NY+1){t.y-=NS;t.oy-=NS}})}
+ else{P.items.forEach(t=>{if(t.y>=NY-1){t.y+=NS;t.oy+=NS}});const i=Math.max(0,P.items.findIndex(t=>t.k==='l1'));
+  P.items.splice(i,0,mk('l0',76,NY,226,37,'Nomor Nenkin\n基础年金番号',{bd:1,g:0}),mk('v0',301,NY,466,37,fmtN((S.k[0]&&S.k[0].d.nen)||''),{bd:1,m:1,g:0}))}
+ return true}
+function placeK(g,c,raw){const[pi,y0]=SL(g),has=S.pages[0].items.some(t=>t.k==='l0'),y=pi==0&&!has?y0-NS:y0;
+ while(S.pages.length<=pi)S.pages.push({items:[]});S.pages[pi].items.push(...company(g,c,y));S.k[g]={raw,d:c}}
+function addK(raw){const d=parse(raw),add=[];
+ if(!S.pages.length){const D={...d,...d.ks[0]};delete D.ks;
+  S.pages=[{items:[...applicant(D),...company(0,D,494)]}];S.k={0:{raw,d:D}};add.push(0);
+  for(let i=1;i<d.ks.length;i++){if(i>4){alert('Maksimal 5 kaisha. Kaisha ke-'+(i+1)+' dan seterusnya tidak dimasukkan.');break}placeK(i,d.ks[i],raw);add.push(i)}
+  if(!D.nen)nenToggle(false);return add}
+ for(const c of d.ks){let g=1;while(S.k[g])g++;if(g>4){alert('Maksimal 5 kaisha.');break}placeK(g,c,raw);add.push(g)}
+ return add}
+const fnName=()=>$('#fn').value.trim();
+function setFn(){const n=((S.k[0]&&S.k[0].d.namaRaw)||'').replace(/\s+/g,' ').trim();if(n)$('#fn').value=n}
 function delK(g){if(!confirm('Hapus Kaisha '+(g+1)+' dari halaman?'))return;S.pages.forEach(p=>p.items=p.items.filter(t=>t.g!==g));delete S.k[g];
  S.pages=S.pages.filter((p,i)=>i==0||p.items.length);render();save()}
 // ====== PARAMETER ======
-const FA=[['nen','Nomor Nenkin'],['nama','Nama'],['lahir','Tanggal lahir'],['alamat','Alamat di Jepang',1],['zip','Kode pos (〒)'],['pulang','Tanggal kepulangan (contoh, edit bila perlu)']],
+const FA=[['nen','Nomor Nenkin (kosong = baris tabel disembunyikan)'],['nama','Nama'],['lahir','Tanggal lahir'],['alamat','Alamat di Jepang',1],['zip','Kode pos (〒)'],['pulang','Tanggal kepulangan (contoh, edit bila perlu)']],
 FC=[['pn','Nama perusahaan (romaji + baris kanji)',1],['ad','Alamat perusahaan (+ baris kode pos)',1],['tel','Telepon'],['masa','Masa kerja'],['jenis','Jenis Nenkin (contoh, edit bila perlu)']],
 MA={nen:'v0',nama:'v1',lahir:'v2',alamat:'v3',zip:'v3',pulang:'v4'},MC={pn:'cv0',ad:'cv1',tel:'cv2',masa:'cv3',jenis:'cv4'};
-function renderParams(){$('#pp').innerHTML=Object.keys(S.k).sort().map(gs=>{const g=+gs,d=S.k[g].d;
- const f=(g?FC:[...FA,...FC]).map(([k,l,t])=>`<label class="fld"><span>${l}</span>${t?`<textarea rows="2" data-g="${g}" data-f="${k}">${esc(d[k]||'')}</textarea>`:`<input data-g="${g}" data-f="${k}" value="${esc(d[k]||'')}">`}</label>`).join('');
- return`<div class="pk"><div class="row"><b>Kaisha ${g+1}</b><button class="bt g sm" data-dz="${g}" title="Cari kode pos dari alamat">Deteksi kode pos</button>${g?`<button class="bt g sm" data-dk="${g}">Hapus</button>`:''}</div><p class="hint">${(ZM[g]||[]).map(esc).join('<br>')}</p>${f}</div>`}).join('')}
-function setF(g,f,v){const d=S.k[g].d;d[f]=v;const key=MA[f]||`g${g}.${MC[f]}`;
+const AK={alamat:['alamatRo','alamatJp','alamatM'],ad:['adRo','adJp','adM']};
+// sesi lama belum punya versi romaji/Jepang: isi otomatis dari teks yang ada
+function ens(d,g){for(const k of(g===0?['alamat','ad']:['ad'])){const[R,J,M]=AK[k];if(d[M]!==undefined)continue;const t=k=='ad'?adBase(d.ad):d[k];
+ if(t&&CJK.test(t)){d[R]='';d[J]=t;d[M]='jp'}else{d[R]=t||'';d[J]='';d[M]='ro'}}}
+function renderParams(){$('#pp').innerHTML=Object.keys(S.k).sort().map(gs=>{const g=+gs,d=S.k[g].d;ens(d,g);
+ const f=(g?FC:[...FA,...FC]).map(([k,l,t])=>{const a=AK[k],sw=a?`<span class="sw"><button type="button" class="${d[a[2]]!='jp'?'on':''}" data-sg="${g}" data-sk="${k}" data-sm="ro">Romaji</button><button type="button" class="${d[a[2]]=='jp'?'on':''}" data-sg="${g}" data-sk="${k}" data-sm="jp">日本語</button></span>`:'',
+  inp=t?`<textarea rows="2" data-g="${g}" data-f="${k}">${esc(d[k]||'')}</textarea>`:`<input data-g="${g}" data-f="${k}" value="${esc(d[k]||'')}">`;
+  return sw?`<div class="fld"><div class="fh"><span>${l}</span>${sw}</div>${inp}</div>`:`<label class="fld"><span>${l}</span>${inp}</label>`}).join('');
+ return`<div class="pk"><div class="row"><b>Kaisha ${g+1}</b><button class="bt g sm" data-dz="${g}" title="Cari kode pos dan ubah alamat romaji ke bahasa Jepang">Deteksi kode pos</button>${g?`<button class="bt g sm" data-dk="${g}">Hapus</button>`:''}</div><p class="hint">${(ZM[g]||[]).map(esc).join('<br>')}</p>${f}</div>`}).join('')}
+function keepFocus(fn){const a=document.activeElement,k=a&&a.dataset&&a.dataset.f?{g:a.dataset.g,f:a.dataset.f,s:a.selectionStart,e:a.selectionEnd}:null;fn();
+ if(k){const n=document.querySelector(`#pp [data-g="${k.g}"][data-f="${k.f}"]`);if(n){n.focus();try{n.setSelectionRange(k.s,k.e)}catch(e){}}}}
+function setF(g,f,v,internal){const d=S.k[g].d;d[f]=v;
+ if(!internal&&AK[f]){ens(d,g);const[R,J,M]=AK[f],b=f=='ad'?adBase(v):v;if(d[M]=='jp')d[J]=b;else d[R]=b}
+ if(f=='nen'&&g===0&&nenToggle(String(v).replace(/\D/g,'').length>0)){keepFocus(()=>{const y=scrollY;render();scrollTo(0,y)});save();return}
+ const key=MA[f]||`g${g}.${MC[f]}`;
  S.pages.forEach((p,pi)=>p.items.forEach((t,i)=>{if(t.k===key){t.s=MA[f]&&(f=='alamat'||f=='zip')?addr(d):f=='nen'?fmtN(v):v;const x=document.querySelector(`.it[data-p="${pi}"][data-i="${i}"] .tx`);if(x)x.textContent=t.s}}));save()}
+// tampilkan versi alamat sesuai saklar (romaji / Jepang)
+function applyAddr(g,key){const d=S.k[g].d,[R,J,M]=AK[key];let t=d[M]=='jp'?d[J]:d[R];
+ if(key=='ad'){const z=(d.ad.match(ZE)||[''])[0].replace(/\s/g,'');t=t+(z?'\n'+z:'')}setF(g,key,t,true)}
+async function swAddr(g,key,m){const d=S.k[g].d;ens(d,g);const[R,J,M]=AK[key];
+ if(m=='jp'&&!d[J]&&d[R]){await detect([g],false,key);if(d[M]=='jp')return;if(!d[J])d[J]=d[R]}
+ if(m=='ro'&&!d[R])note('Versi romaji masih kosong, silakan ketik.');
+ d[M]=m;applyAddr(g,key);renderParams()}
 $('#pp').addEventListener('input',e=>{const t=e.target;if(t.dataset.f)setF(+t.dataset.g,t.dataset.f,t.value)});
-$('#pp').addEventListener('click',e=>{const b=e.target.closest('[data-dk]');if(b)delK(+b.dataset.dk);const z=e.target.closest('[data-dz]');if(z)detect([+z.dataset.dz],true)});
+$('#pp').addEventListener('click',e=>{const b=e.target.closest('[data-dk]');if(b)delK(+b.dataset.dk);const z=e.target.closest('[data-dz]');if(z)detect([+z.dataset.dz],true);
+ const w=e.target.closest('[data-sg]');if(w)swAddr(+w.dataset.sg,w.dataset.sk,w.dataset.sm)});
 // ====== KODE POS ======
 const NZ=s=>String(s).toLowerCase().replace(/\(.*?\)/g,'').replace(/[^a-z]/g,'').replace(/oh/g,'o').replace(/ou|oo/g,'o').replace(/uu/g,'u');
 const SW1=new Set(['ken','to','fu']),SW2=new Set(['shi','ku','gun','machi','cho','mura','son']);
@@ -202,16 +262,17 @@ function names(t,SW){const w=String(t).toLowerCase().replace(/\(.*?\)/g,'').spli
  return[...new Set(v)].filter(x=>x.length>=3)}
 function zipBuild(rows){const P=new Map(),nc=new Map();
  for(const r of rows){const ro=r&&r[3];if(!ro||!/^\d{3}-\d{4}$/.test(String(r[0])))continue;const pt=String(ro).split(', ');if(pt.length<3)continue;
-  const pf=pt[pt.length-1],ct=pt[pt.length-2],ar=NZ(pt.slice(0,-2).join(', '));let p=P.get(pf);if(!p){p={v:names(pf,SW1),c:new Map()};P.set(pf,p)}
-  let c=p.c.get(ct);if(!c){c={v:names(ct,SW2),rows:[]};p.c.set(ct,c)}c.rows.push([ar,r[0],r[2],String(r[1]).includes('以下に掲載がない場合')])}
+  const pf=pt[pt.length-1],ct=pt[pt.length-2],ar=NZ(pt.slice(0,-2).join(', '));let p=P.get(pf);if(!p){p={v:names(pf,SW1),c:new Map(),raw:pf};P.set(pf,p)}
+  let c=p.c.get(ct);if(!c){c={v:names(ct,SW2),rows:[],raw:ct};p.c.set(ct,c)}c.rows.push([ar,r[0],r[2],String(r[1]).includes('以下に掲載がない場合'),String(r[1])])}
  return P}
 function zipFind(P,a){const inp=NZ(a);let best=null,ic=inp;
  let ps=[...P.values()].filter(p=>p.v.some(x=>inp.includes(x)));
  if(!ps.length)ps=[...P.values()];
- for(const p of ps)for(const c of p.c.values()){const m=c.v.filter(x=>(x.length>=4||x===c.v[0])&&ic.includes(x)&&(x===c.v[0]||!p.v.includes(x)||inp.split(x).length>2)).sort((x,y)=>y.length-x.length)[0];if(m&&(!best||m.length>best.l))best={l:m.length,m,c}}
+ for(const p of ps)for(const c of p.c.values()){const m=c.v.filter(x=>(x.length>=4||x===c.v[0])&&ic.includes(x)&&(x===c.v[0]||!p.v.includes(x)||inp.split(x).length>2)).sort((x,y)=>y.length-x.length)[0];if(m&&(!best||m.length>best.l))best={l:m.length,m,c,p}}
  if(!best)return null;const ia=ic.replace(best.m,'');let ar=null;
  for(const r of best.c.rows)if(r[0].length>=3&&ia.includes(r[0])&&(!ar||r[0].length>ar[0].length))ar=r;
- if(ar)return{z:ar[1],j:ar[2],conf:'area'};const g=best.c.rows.find(r=>r[3])||best.c.rows[0];return{z:g[1],j:g[2],conf:'kota'}}
+ const cj=r=>r[3]?r[2]:(r[4]&&r[2].endsWith(r[4])?r[2].slice(0,-r[4].length):r[2]),pw=best.p.raw,cw=best.c.raw;
+ if(ar)return{z:ar[1],j:ar[2],conf:'area',ar,pw,cw,cj:cj(ar)};const g=best.c.rows.find(r=>r[3])||best.c.rows[0];return{z:g[1],j:g[2],conf:'kota',pw,cw,cj:cj(g)}}
 async function loadZip(set){if(ZD)return ZD;
  const r=await fetch(ZIPFILE);if(!r.ok)throw Error('file Excel kode pos belum ditemukan. Taruh '+ZIPFILE+' satu folder dengan HTML ini di GitHub Pages (tidak jalan bila HTML dibuka langsung dari komputer).');
  const L=+r.headers.get('content-length')||0,rd=r.body.getReader(),ch=[];let n=0;
@@ -220,16 +281,36 @@ async function loadZip(set){if(ZD)return ZD;
  const wb=XLSX.read(buf,{type:'array',sheets:'Wilayah'});await set(80);
  const rows=XLSX.utils.sheet_to_json(wb.Sheets['Wilayah'],{header:1,raw:true});await set(90);ZD=zipBuild(rows);return ZD}
 const adBase=a=>String(a||'').replace(/\n?〒\s*\d{3}-?\d{4}\s*$/,'').trim(),hasZ=a=>/〒\s*\d{3}-?\d{4}/.test(a||''),cf=r=>r.conf=='area'?'cocok sampai area':'cocok sampai kota, mohon cek ulang';
-async function detect(gs,force){
- await busy('Mendeteksi kode pos…',async set=>{try{const P=await loadZip(set);
-  for(const g of gs){const d=S.k[g]&&S.k[g].d;if(!d)continue;const m=[];
-   if(g===0){if(!d.alamat)m.push('Alamat di Jepang kosong.');else if(!force&&d.zip)m.push('Alamat di Jepang: kode pos sudah terisi.');
-    else{const r=zipFind(P,d.alamat);if(r){setF(0,'zip','〒'+r.z);m.push(`Alamat di Jepang: 〒${r.z} (${cf(r)}) ${r.j}`)}else m.push('Alamat di Jepang: tidak ditemukan, isi manual.')}}
-   const base=adBase(d.ad);
-   if(!base)m.push('Alamat perusahaan kosong.');else if(!force&&hasZ(d.ad))m.push('Alamat perusahaan: kode pos sudah terisi dari pesan.');
-   else{const r=zipFind(P,base);if(!r)m.push('Alamat perusahaan: tidak ditemukan, isi manual.');
-    else if(hasZ(d.ad)&&r.conf!='area')m.push(`Alamat perusahaan: kode pos lama dipertahankan (hasil deteksi 〒${r.z} hanya cocok sampai kota).`);
-    else{setF(g,'ad',base+'\n〒'+r.z);m.push(`Alamat perusahaan: 〒${r.z} (${cf(r)}) ${r.j}`)}}
+// romaji -> Jepang: wilayah (provinsi/kota/area) dari Excel, nomor tetap angka, sisanya (nama gedung) tetap romaji
+const wrd=s=>String(s).replace(/([a-zA-Z])-(?=[a-zA-Z])/g,'$1 ').split(/[\s,，]+/).filter(Boolean),
+ isN=t=>/^\d[\d\-]*(?:-?(?:chome|banchi|ban|go))?[\d\-]*$/i.test(t),
+ cvN=t=>t.replace(/(\d+)-?chome/ig,'$1丁目').replace(/(\d+)-?banchi/ig,'$1番地').replace(/(\d+)-?ban/ig,'$1番').replace(/(\d+)-?go\b/ig,'$1号');
+function zipConv(P,text){const r=zipFind(P,text);if(!r)return null;const L=wrd(text);
+ for(const w of[...wrd(r.pw),...wrd(r.cw)].map(NZ).filter(Boolean)){const i=L.findIndex(t=>NZ(t)===w);if(i>=0)L.splice(i,1)}
+ if(r.conf=='kota')return{...r,part:true,jp:r.cj+(L.length?' '+L.join(' ').toUpperCase():'')};
+ const an=r.ar[0];let ok=false;
+ for(let s=0;s<L.length&&!ok;s++){let acc='';for(let e=s;e<L.length;e++){if(/\d/.test(L[e]))break;acc+=L[e];const n=NZ(acc);if(n===an){L.splice(s,e-s+1);ok=true;break}if(!an.startsWith(n))break}}
+ let i=0;while(i<L.length&&isN(L[i]))i++;
+ const base=r.j.replace(/（[^）]*）/g,'').replace(/\s+/g,''),num=L.slice(0,i).map(cvN).join(''),bld=L.slice(i).join(' ').toUpperCase();
+ return{...r,part:!ok,rem:bld,jp:base+num+(bld?' '+bld:'')}}
+const pn_=r=>r.conf=='kota'?' Area belum ketemu di Excel, sisanya tetap romaji.':r.part?' Bagian sisa tidak terpisah rapi, mohon cek.':r.rem?` Sisa "${r.rem}" (nama gedung/blok) tidak ada di Excel, dibiarkan romaji, edit manual bila perlu.`:'';
+function procA(P,d,m,force){const ro=d.alamatRo;
+ if(!ro){m.push(d.alamat?'Alamat di Jepang: sudah berbahasa Jepang.':'Alamat di Jepang kosong.');return}
+ const r=zipConv(P,ro);if(!r){m.push('Alamat di Jepang: tidak ditemukan di Excel, isi manual.');return}
+ d.alamatJp=r.jp;d.alamatM='jp';applyAddr(0,'alamat');
+ const setz=force||!d.zip;if(setz)setF(0,'zip','〒'+r.z);
+ m.push(`Alamat di Jepang: ${r.jp} ${setz?`(〒${r.z}, ${cf(r)})`:'(kode pos lama dipertahankan)'}.${pn_(r)}`)}
+function procK(P,g,d,m,force){const ro=d.adRo,hz=hasZ(d.ad),oz=(d.ad.match(ZE)||[''])[0].replace(/\s/g,'');
+ if(!ro){m.push(adBase(d.ad)?'Alamat perusahaan: sudah berbahasa Jepang'+(hz?'.':', kode pos belum ada, isi manual.'):'Alamat perusahaan kosong.');return}
+ const r=zipConv(P,ro);if(!r){m.push('Alamat perusahaan: tidak ditemukan di Excel, isi manual.');return}
+ const setz=!hz||(force&&r.conf=='area'),z=setz?'〒'+r.z:oz;
+ d.adJp=r.jp;d.adM='jp';setF(g,'ad',r.jp+(z?'\n'+z:''),true);
+ m.push(`Alamat perusahaan: ${r.jp} ${setz?`(〒${r.z}, ${cf(r)})`:'(kode pos dari pesan dipertahankan)'}.${pn_(r)}`)}
+async function detect(gs,force,only){
+ await busy('Mendeteksi kode pos dan alamat…',async set=>{try{const P=await loadZip(set);
+  for(const g of gs){const d=S.k[g]&&S.k[g].d;if(!d)continue;ens(d,g);const m=[];
+   if(g===0&&only!='ad')procA(P,d,m,force);
+   if(only!='alamat')procK(P,g,d,m,force);
    ZM[g]=m}
  }catch(e){gs.forEach(g=>ZM[g]=['Gagal deteksi: '+e.message])}});renderParams()}
 // ====== PREVIEW ======
@@ -244,10 +325,10 @@ function render(){const R=$('#prev');R.innerHTML='';sc=Math.min(1,(R.clientWidth
  document.body.classList.toggle('ed',edit);sel=null;$('#tb').disabled=true;const n=Object.keys(S.k).length;
  $('#cnt').textContent=`(${n}/5)`;$('#add').disabled=n>=5;
  document.querySelectorAll('[data-x]').forEach(b=>b.disabled=!S.pages.length);ui();renderParams()}
-function save(){hist();dirty=true;clearTimeout(tm);tm=setTimeout(()=>{if(!U)return;try{localStorage.setItem(K+U,JSON.stringify({S,fn:$('#fn').value}));$('#sv').textContent='Tersimpan otomatis di perangkat ✓'}catch(e){$('#sv').textContent='Penyimpanan perangkat tidak tersedia'}},300);
+function save(){hist();dirty=true;clearTimeout(tm);tm=setTimeout(()=>{if(!U)return;try{localStorage.setItem(K+U,JSON.stringify({S,fn:$('#fn').value}));$('#sv').textContent='Tersimpan otomatis: '+(fnName()||'tanpa nama')+' ✓'}catch(e){$('#sv').textContent='Penyimpanan perangkat tidak tersedia'}},300);
  clearTimeout(ct);ct=setTimeout(cloud,45000)}
-async function cloud(type='auto',name='Otomatis'){if(!U||!TK||!S.pages.length)return;
- try{await api('hsave',{type,name,data:JSON.stringify({S,fn:$('#fn').value})});dirty=false;$('#sv').textContent=(type=='auto'?'Riwayat otomatis':'Riwayat')+' tersimpan '+new Date().toLocaleTimeString('id-ID')+' ✓'}catch(e){$('#sv').textContent='Cadangan riwayat gagal: '+e.message}}
+async function cloud(type='auto',name){if(!U||!TK||!S.pages.length)return;
+ try{await api('hsave',{type,name:name||fnName()||'Otomatis',data:JSON.stringify({S,fn:$('#fn').value})});dirty=false;$('#sv').textContent=(type=='auto'?'Riwayat otomatis':'Riwayat')+' tersimpan '+new Date().toLocaleTimeString('id-ID')+' ✓'}catch(e){$('#sv').textContent='Cadangan riwayat gagal: '+e.message}}
 function pick(d){document.querySelectorAll('.it.sel').forEach(x=>x.classList.remove('sel'));if(!d){sel=null;$('#tb').disabled=true;syncB();return}
  d.classList.add('sel');sel={p:+d.dataset.p,i:+d.dataset.i};const t=T();$('#tb').disabled=false;
  $('#tf').value=t.f;$('#tz').value=+(t.z*.75).toFixed(1);$('#tc').value=t.c;$('#ta').value=t.al;syncB()}
@@ -302,10 +383,10 @@ $('#rst').onclick=()=>{if(!confirm('Mulai dari awal? Semua halaman dan isian yan
 $('#add').onclick=()=>$('#md').classList.add('on');
 document.addEventListener('click',e=>{const c=e.target.closest('[data-close]');if(c)c.closest('.ov').classList.remove('on')});
 $('#mk').onclick=async()=>{const r=$('#raw').value;if(r.trim().length<20){alert('Tempel dulu pesan WhatsApp-nya ya.');return}
- $('#md').classList.remove('on');let ng=-1;
- await busy('Memproses pesan…',async set=>{await set(30);ng=addK(r);await set(70);render();await set(95);save()});
- if(ng<0)return;$('#raw').value='';
- if($('#az').checked)await detect([ng],false);
+ $('#md').classList.remove('on');let ng=[];
+ await busy('Memproses pesan…',async set=>{await set(30);ng=addK(r);if(ng[0]===0)setFn();await set(70);render();await set(95);save()});
+ if(!ng.length)return;$('#raw').value='';
+ if($('#az').checked)await detect(ng,false);
  setTimeout(()=>{const p=document.querySelectorAll('.pw');p[p.length-1]&&p[p.length-1].scrollIntoView({behavior:'smooth'})},100)};
 // ====== UNDUH ======
 const dl=async(b,n)=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();a.remove();await sleep(400)};
@@ -333,7 +414,7 @@ async function exp(type){const fn=($('#fn').value.trim()||'Surat_Nenkin').replac
   await set(90)});
  document.body.classList.toggle('ed',was);document.body.classList.remove('nx')}
 document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>exp(b.dataset.x));
-$('#sj').onclick=()=>dl(new Blob([JSON.stringify({S,fn:$('#fn').value})],{type:'application/json'}),($('#fn').value.trim()||'Surat_Nenkin')+'.json');
+$('#sj').onclick=()=>dl(new Blob([JSON.stringify({S,fn:$('#fn').value})],{type:'application/json'}),($('#fn').value.trim()||'Surat_Nenkin').replace(/[\\/:*?"<>|]/g,'_')+'.json');
 $('#fn').oninput=save;$('#ld0').onclick=()=>$('#fj').click();
 function loadSess(j){S=j.S||j;S.k=S.k||{};resetHist();$('#fn').value=j.fn||'';render();save()}
 $('#fj').onchange=async e=>{const f=e.target.files[0];if(!f)return;await busy('Memuat sesi…',async set=>{await set(40);loadSess(JSON.parse(await f.text()));await set(80)});e.target.value=''};
@@ -402,7 +483,7 @@ async function histList(){const h=$('#hl');h.textContent='Memuat…';
  try{const j=await api('hlist');h.innerHTML=j.items.length?j.items.map(i=>`<div class="hi"><div><span class="tg">${i.type=='auto'?'otomatis':'manual'}</span><b>${esc(i.name)}</b><div class="hint" style="margin:0">${new Date(i.t).toLocaleString('id-ID')}</div></div><div class="row"><button class="bt sm" data-hl="${i.id}">Muat</button><button class="bt g sm" data-hd="${i.id}">Hapus</button></div></div>`).join(''):'<p class="hint">Belum ada riwayat.</p>'}
  catch(e){h.textContent='Gagal memuat: '+e.message}}
 $('#bh').onclick=()=>{$('#hm').classList.add('on');histList()};
-$('#hs').onclick=async()=>{await busy('Menyimpan riwayat…',async()=>{await api('hsave',{type:'manual',name:$('#hn').value.trim()||('Manual '+new Date().toLocaleString('id-ID')),data:JSON.stringify({S,fn:$('#fn').value})});dirty=false});$('#hn').value='';histList()};
+$('#hs').onclick=async()=>{await busy('Menyimpan riwayat…',async()=>{await api('hsave',{type:'manual',name:$('#hn').value.trim()||fnName()||('Manual '+new Date().toLocaleString('id-ID')),data:JSON.stringify({S,fn:$('#fn').value})});dirty=false});$('#hn').value='';histList()};
 $('#hl').addEventListener('click',async e=>{const l=e.target.closest('[data-hl]'),d=e.target.closest('[data-hd]');
  if(l&&confirm('Muat riwayat ini? Sesi yang sedang dibuka akan diganti.')){await busy('Memuat riwayat…',async set=>{await set(30);const j=await api('hget',{id:l.dataset.hl});await set(70);loadSess(JSON.parse(j.data))});$('#hm').classList.remove('on')}
  if(d&&confirm('Hapus riwayat ini?')){await busy('Menghapus…',()=>api('hdel',{id:d.dataset.hd}));histList()}});
