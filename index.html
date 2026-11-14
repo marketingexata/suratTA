@@ -165,15 +165,15 @@ const fixZ=z=>z.replace(/\s/g,'').replace(/〒(\d{3})-?(\d{4})/,'〒$1-$2');
 function pKaisha(b){const g=re=>{const m=b.match(re);return m?m[1].trim():''};
  let pn=g(/Nama Perusahaan\s*:[ \t]*(.*)/i),kj='',rj=pn;const m=pn.match(/^(.*?)\s*[（(](.+?)[）)]\s*$/);
  if(m){if(/[\u3000-\u9fff]/.test(m[1])){kj=m[1];rj=m[2]}else{rj=m[1]}}
- let ad=(b.match(/Alamat Perusahaan\s*:([\s\S]*?)(?=\n[^\n]*(?:No\s*tlf|No\s*telp|Masa\s*kerja|Bidang\s*kerja|Pembayaran)|$)/i)||[,''])[1];
+ let ad=(b.match(/Alamat Perusahaan\s*:([\s\S]*?)(?=\n[^\n]*(?:No\.?\s*(?:tlf|tlp|telp|telepon|telpon|hp)|Masa\s*kerja|Jangka\s*waktu|Bidang\s*(?:kerja|pekerjaan)|Pembayaran)|$)/i)||[,''])[1];
  let z=(ad.match(ZR)||[''])[0];ad=ad.replace(ZR,'');
  if(!z){const m2=ad.match(/^\s*(\d{3}-\d{4})(?!\d)/);if(m2){z='〒'+m2[1];ad=ad.replace(m2[0],'')}}
  z=fixZ(z);ad=ad.replace(/\s*\n\s*/g,' ').replace(/\s*,\s*/g,', ').replace(/\s+/g,' ').trim().toUpperCase();
- let ml=(b.match(/masa\s*kerja([^\n]*)/i)||[])[1];if(ml===undefined)ml=(b.match(/([^\n]*sampai[^\n]*)/i)||[])[1]||'';
+ const ml=(b.split('\n').find(l=>/jangka\s*waktu|masa\s*kerja|sampai/i.test(l))||'').replace(/^[^a-zA-Z]*/,'').replace(/^(?:jangka\s*waktu\s*(?:bekerja|kerja)?|masa\s*kerja)/i,'');
  const hv=ml.split(/\bsampai\b|\bs\/d\b|\bhingga\b|[–—]|\s-\s/i),a=pPart(hv[0]),e=hv.length>1?pPart(hv[1]):null,
   rest=(hv[1]||'').replace(/[:|]/g,' ').replace(/\b(?:tgl|tanggal|bln|th|thn)\b/gi,' ').replace(/\s+/g,' ').trim().toUpperCase(),en=e?fd(e):rest,jp=CJK.test(ad);
  return{pn:rj.trim().toUpperCase()+(kj?'\n'+kj:''),ad:ad+(z?'\n'+z:''),adRo:jp?'':ad,adJp:jp?ad:'',adM:jp?'jp':'ro',
-  tel:g(/No\s*(?:tlf|telp|telepon)\s*perusahaan\s*:[ \t]*(.*)/i),masa:a?fd(a)+(en?' – '+en:''):'',jenis:'KOUSEI NENKIN/ 厚生年金保険'}}
+  tel:g(/No\.?\s*(?:tlf|tlp|telp|telepon|telpon|hp)[^:\n]*:[ \t]*(.*)/i),masa:a?fd(a)+(en?' – '+en:''):'',jenis:'KOUSEI NENKIN/ 厚生年金保険'}}
 function parse(r){
  r=r.replace(/[\u2060\u200b\u200e\u200f\u00a0]/g,' ').replace(/\r/g,'');
  const L=r.split('\n'),st=[];L.forEach((l,i)=>{if(/Nama\s*Perusahaan\s*:/i.test(l))st.push(i)});
@@ -182,10 +182,10 @@ function parse(r){
  if(!blk.length)blk.push('');
  const g=re=>{const m=head.match(re);return m?m[1].trim():''};
  let nen='';for(const l of r.split('\n')){const m=l.match(/nenkin[^:\n]*:[ \t]*(.*)$/i);if(m&&!/pembayaran|jenis/i.test(l)){const dg=m[1].replace(/\D/g,'');if(dg.length>=4){nen=fmtN(dg);break}}}
- const namaRaw=g(/Nama Lengkap\s*:[ \t]*(.*)/i).replace(/\s+/g,' '),lt=g(/(?:tgl|tanggal)\s*lahir\s*:?[ \t]*(.*)/i),ld=pDate(lt),
-  al=g(/alamat\s*(?:apato|apartemen|apartment|tinggal)\s*:[ \t]*(.*)/i),au=al.replace(/\s*,\s*/g,', ').replace(/\s+/g,' ').trim().toUpperCase(),aj=CJK.test(au);
+ const pg=g(/(?:tgl|tanggal)\s*(?:kepulangan|pulang)[^:\n]*:[ \t]*(.*)/i),pd=pDate(pg),pl=pd?fd(pd):(pg||'2024 年 12 月 16 日'),namaRaw=g(/Nama Lengkap\s*:[ \t]*(.*)/i).replace(/\s+/g,' '),lt=g(/(?:tgl|tanggal)\s*lahir\s*:?[ \t]*(.*)/i),ld=pDate(lt),
+  al=g(/alamat\s*(?:apato|apartemen|apartment|tinggal)[^:\n]*:[ \t]*(.*)/i),au=al.replace(/\s*,\s*/g,', ').replace(/\s+/g,' ').trim().toUpperCase(),aj=CJK.test(au);
  return{nen,nama:namaRaw.toUpperCase(),namaRaw,lahir:ld?fd(ld):lt,alamat:au,alamatRo:aj?'':au,alamatJp:aj?au:'',alamatM:aj?'jp':'ro',zip:'',
-  pulang:'2024 年 12 月 16 日',ks:blk.map(pKaisha)}}
+  pulang:pl,ks:blk.map(pKaisha)}}
 // ====== TEMPLATE ======
 const mk=(k,x,y,w,h,s,o)=>({k,x,y,w,h,ox:x,oy:y,s,f:'t',z:14,c:'#000000',b:0,i:0,tx:0,ty:0,al:'l',bd:0,m:0,...o});
 const addr=d=>d.alamat+(d.zip?'\n'+d.zip:'');
