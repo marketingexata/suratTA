@@ -151,41 +151,77 @@ async function api(a,d={}){if(!API)throw Error('URL Apps Script belum diisi (bar
 const fmtN=s=>{const d=String(s).replace(/\D/g,'');return d.length>4?d.slice(0,4)+'-'+d.slice(4):d};
 const CJK=/[\u3040-\u30ff\u3400-\u9fff\uff00-\uffef]/,ZR=/〒\s*\d{3}-?\d{4}/,ZE=/〒\s*\d{3}-?\d{4}\s*$/;
 const M3={jan:1,feb:2,peb:2,mar:3,apr:4,mei:5,may:5,jun:6,jul:7,agu:8,agt:8,ags:8,aug:8,sep:9,okt:10,oct:10,nov:11,nop:11,des:12,dec:12};
-const p2=n=>String(n).padStart(2,'0'),fd=o=>`${o.y} 年 ${p2(o.m)} 月 ${p2(o.d)} 日`;
-function chkD(y,m,d){if(y<1900||y>2100||m<1||m>12||d<1)return null;return d>new Date(y,m,0).getDate()?null:{y,m,d}}
-// tanggal fleksibel: 25juni1996, 25 Juni 1996, 25 JUNI 1996, 25-06-1996, 25/6/1996, 25061996, 1996-06-25, 25 jun 96 ...
+const p2=n=>String(n).padStart(2,'0'),fd=o=>`${o.y} 年 ${p2(o.m)} 月`+(o.d?` ${p2(o.d)} 日`:'');
+function chkD(y,m,d){if(y<1900||y>2100||m<1||m>12)return null;if(d==null)return{y,m,d:null};return d<1||d>new Date(y,m,0).getDate()?null:{y,m,d}}
+// tanggal fleksibel: 25juni1996, 25 Juni 1996, 25-06-1996, 25/6/1996, 25061996, 1996-06-25, 1996年6月25日, 25 jun 96, "Jakarta, 25 Juni 1996"; bulan+tahun saja juga terbaca
 function pDate(s){s=String(s||'').toLowerCase().replace(/[\u2060\u200b\u00a0]/g,' ').trim();let m;
  if(m=s.match(/^(\d{2})(\d{2})(\d{4})$/))return chkD(+m[3],+m[2],+m[1]);
+ if(m=s.match(/(\d{4})\s*年\s*(\d{1,2})\s*月(?:\s*(\d{1,2})\s*日?)?/))return chkD(+m[1],+m[2],m[3]?+m[3]:null);
  if(m=s.match(/(\d{1,2})\s*(?:st|nd|rd|th)?[\s.,\-\/']*([a-z]{3,12})\.?[\s.,\-\/']*(\d{4}|\d{2})(?!\d)/)){const mo=M3[m[2].slice(0,3)];if(mo){let y=+m[3];if(m[3].length==2)y+=y>30?1900:2000;return chkD(y,mo,+m[1])}}
  if(m=s.match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})(?!\d)/))return chkD(+m[1],+m[2],+m[3]);
  if(m=s.match(/(\d{1,2})\D+(\d{1,2})\D+(\d{4})/))return chkD(+m[3],+m[2],+m[1]);
+ if(m=s.match(/([a-z]{3,12})\.?[\s.,\-\/']*(\d{4})(?!\d)/)){const mo=M3[m[1].slice(0,3)];if(mo)return chkD(+m[2],mo,null)}
+ if(m=s.match(/(?:^|\D)(\d{1,2})\s*[\/\-.]\s*(\d{4})(?!\d)/))return chkD(+m[2],+m[1],null);
  return null}
-const pPart=s=>pDate(String(s).replace(/\b(?:tgl|tanggal|bln|bulan|th|thn|tahun)\b/gi,' ').replace(/[:|]/g,' '));
+const pPart=s=>pDate(String(s).replace(/\b(?:tgl|tanggal|bln|bulan|th|thn|tahun|dari|mulai)\b/gi,' ').replace(/[:|]/g,' '));
 const fixZ=z=>z.replace(/\s/g,'').replace(/〒(\d{3})-?(\d{4})/,'〒$1-$2');
-function pKaisha(b){const g=re=>{const m=b.match(re);return m?m[1].trim():''};
- let pn=g(/Nama Perusahaan\s*:[ \t]*(.*)/i),kj='',rj=pn;const m=pn.match(/^(.*?)\s*[（(](.+?)[）)]\s*$/);
- if(m){if(/[\u3000-\u9fff]/.test(m[1])){kj=m[1];rj=m[2]}else{rj=m[1]}}
- let ad=(b.match(/Alamat Perusahaan\s*:([\s\S]*?)(?=\n[^\n]*(?:No\.?\s*(?:tlf|tlp|telp|telepon|telpon|hp)|Masa\s*kerja|Jangka\s*waktu|Bidang\s*(?:kerja|pekerjaan)|Pembayaran)|$)/i)||[,''])[1];
- let z=(ad.match(ZR)||[''])[0];ad=ad.replace(ZR,'');
+const SPL=/\bsampai(?:\s+dengan)?\b|\bs\s*[.\/]\s*d\b|\bhingga\b|\buntil\b|[–—~→]|\s-\s/i;
+// ---- pembaca label: mengenali isian dari kata kunci, bukan dari urutan/nomor/format tetap ----
+function cls(l){l=String(l).toLowerCase().replace(/\(.*?\)/g,' ').replace(/[^a-z0-9\u3040-\u9fff ]/g,' ').replace(/\s+/g,' ').trim();if(!l)return null;
+ if(/pembayaran|bayar|jenis|bidang|pekerjaan|jabatan|posisi|gaji|visa|status|keterangan|catatan/.test(l))return'ign';
+ if(/nenkin|nen kin|pensiun|年金/.test(l))return'nen';
+ if(/jangka|masa kerja|masa bekerja|lama kerja|lama bekerja|waktu bekerja|periode/.test(l))return'masa';
+ if(/pulang|kembali ke|return/.test(l))return'pulang';
+ if(/lahir|ttl|birth|dob/.test(l))return'lahir';
+ if(/\b(?:mulai|masuk|awal)\b|^dari( tanggal)?$/.test(l))return'ms';
+ if(/\b(?:selesai|keluar|akhir|berhenti|resign)\b|^sampai\b/.test(l))return'me';
+ if(/perusahaan|kaisha|kaisya|company|kantor|tempat kerja|会社|勤務先/.test(l)){if(/alamat|address|lokasi/.test(l))return'ad';if(/telp|telepon|tlp|tlf|phone|\bhp\b|\bno\b|nomor/.test(l))return'tel';return'pn'}
+ if(/telp|telepon|tlp|tlf|phone|\bhp\b/.test(l))return'tel';
+ if(/alamat|address|domisili|tempat tinggal|apato|apartemen|apartment/.test(l))return/jepang|japan|apato|apartemen|apartment|tinggal|rumah|domisili/.test(l)?'alamat':'addr';
+ if(/^nama( lengkap| pemohon| anda| saya)?$|nama lengkap|nama pemohon|full name|^name$/.test(l))return'nama';
+ return null}
+function kv(line){const t=line.replace(/^\d{1,2}\s*[.)]\s*/,'');let m=t.match(/^(.{1,80}?)\s*[:：=＝]\s*(.*)$/);
+ if(m)return{f:cls(m[1]),v:m[2].trim()};
+ m=t.match(/^(.{1,60}?)\s+[-–—]\s+(.*)$/);if(m){const f=cls(m[1]);if(f)return{f,v:m[2].trim()}}
+ return null}
+const CF=['pn','ad','tel','masa','ms','me'],
+ MK=/^(?:\d{1,2}\s*[.)]\s*)?(?:kaisha|kaisya|perusahaan|company|kantor|tempat\s*kerja)\s*(?:ke)?[\s\-#]*(\d+)?\s*[:：]?\s*$/i,
+ WA=/^\[?\d{1,2}[\/.]\d{1,2}[\/.]\d{2,4},?\s+\d{1,2}[.:]\d{2}(?::\d{2})?(?:\s?[ap]\.?m\.?)?\]?\s*(?:-\s*)?[^:：]{1,40}:\s*/i;
+function mkC(c){let pn=(c.pn||'').replace(/\s+/g,' ').trim(),kj='',rj=pn;const m=pn.match(/^(.*?)\s*[（(](.+?)[）)]\s*$/);
+ if(m){if(/[\u3000-\u9fff]/.test(m[1])){kj=m[1];rj=m[2]}else{rj=m[1];if(/[\u3000-\u9fff]/.test(m[2]))kj=m[2]}}
+ let ad=c.ad||'',z=(ad.match(ZR)||[''])[0];ad=ad.replace(ZR,'');
  if(!z){const m2=ad.match(/^\s*(\d{3}-\d{4})(?!\d)/);if(m2){z='〒'+m2[1];ad=ad.replace(m2[0],'')}}
  z=fixZ(z);ad=ad.replace(/\s*\n\s*/g,' ').replace(/\s*,\s*/g,', ').replace(/\s+/g,' ').trim().toUpperCase();
- const ml=(b.split('\n').find(l=>/jangka\s*waktu|masa\s*kerja|sampai/i.test(l))||'').replace(/^[^a-zA-Z]*/,'').replace(/^(?:jangka\s*waktu\s*(?:bekerja|kerja)?|masa\s*kerja)/i,'');
- const hv=ml.split(/\bsampai\b|\bs\/d\b|\bhingga\b|[–—]|\s-\s/i),a=pPart(hv[0]),e=hv.length>1?pPart(hv[1]):null,
+ let ml=c.masa||'';if(c.ms)ml=c.ms+' sampai '+(c.me||'');else if(c.me&&!SPL.test(ml))ml=ml+' sampai '+c.me;
+ const hv=ml.split(SPL),a=pPart(hv[0]),e=hv.length>1?pPart(hv[1]):null,
   rest=(hv[1]||'').replace(/[:|]/g,' ').replace(/\b(?:tgl|tanggal|bln|th|thn)\b/gi,' ').replace(/\s+/g,' ').trim().toUpperCase(),en=e?fd(e):rest,jp=CJK.test(ad);
  return{pn:rj.trim().toUpperCase()+(kj?'\n'+kj:''),ad:ad+(z?'\n'+z:''),adRo:jp?'':ad,adJp:jp?ad:'',adM:jp?'jp':'ro',
-  tel:g(/No\.?\s*(?:tlf|tlp|telp|telepon|telpon|hp)[^:\n]*:[ \t]*(.*)/i),masa:a?fd(a)+(en?' – '+en:''):'',jenis:'KOUSEI NENKIN/ 厚生年金保険'}}
+  tel:(c.tel||'').trim(),masa:a?fd(a)+(en?' – '+en:''):'',jenis:'KOUSEI NENKIN/ 厚生年金保険'}}
 function parse(r){
- r=r.replace(/[\u2060\u200b\u200e\u200f\u00a0]/g,' ').replace(/\r/g,'');
- const L=r.split('\n'),st=[];L.forEach((l,i)=>{if(/Nama\s*Perusahaan\s*:/i.test(l))st.push(i)});
- const head=L.slice(0,st.length?st[0]:L.length).join('\n'),
-  blk=st.map((x,i)=>L.slice(x,i+1<st.length?st[i+1]:L.length).join('\n').replace(/(?:\n[ \t|]*kaisha\s*\d*[ \t|]*)+\s*$/i,''));
- if(!blk.length)blk.push('');
- const g=re=>{const m=head.match(re);return m?m[1].trim():''};
- let nen='';for(const l of r.split('\n')){const m=l.match(/nenkin[^:\n]*:[ \t]*(.*)$/i);if(m&&!/pembayaran|jenis/i.test(l)){const dg=m[1].replace(/\D/g,'');if(dg.length>=4){nen=fmtN(dg);break}}}
- const pg=g(/(?:tgl|tanggal)\s*(?:kepulangan|pulang)[^:\n]*:[ \t]*(.*)/i),pd=pDate(pg),pl=pd?fd(pd):(pg||'2024 年 12 月 16 日'),namaRaw=g(/Nama Lengkap\s*:[ \t]*(.*)/i).replace(/\s+/g,' '),lt=g(/(?:tgl|tanggal)\s*lahir\s*:?[ \t]*(.*)/i),ld=pDate(lt),
-  al=g(/alamat\s*(?:apato|apartemen|apartment|tinggal)[^:\n]*:[ \t]*(.*)/i),au=al.replace(/\s*,\s*/g,', ').replace(/\s+/g,' ').trim().toUpperCase(),aj=CJK.test(au);
- return{nen,nama:namaRaw.toUpperCase(),namaRaw,lahir:ld?fd(ld):lt,alamat:au,alamatRo:aj?'':au,alamatJp:aj?au:'',alamatM:aj?'jp':'ro',zip:'',
-  pulang:pl,ks:blk.map(pKaisha)}}
+ r=String(r).replace(/[\u2060\u200b\u200e\u200f\u00a0\ufeff]/g,' ').replace(/\r/g,'').replace(/[*~`]/g,'').replace(/(^|[\s:：])_+|_+(?=[\s:：]|$)/gm,'$1');
+ const A={},C=[];let cur=null,last=null;const newC=()=>{C.push({});cur=C[C.length-1]};
+ for(let line of r.split('\n')){
+  line=line.replace(WA,'').replace(/^[\s|>•·\-–—]+/,'').trim();
+  if(!line){if(last&&last.o[last.k])last=null;continue}
+  const mk=line.match(MK);if(mk&&(mk[1]||!/[:：]/.test(line))){newC();last=null;continue}
+  const m=kv(line);
+  if(m&&m.f==='ign'){last=null;continue}
+  if(m&&m.f){let f=m.f;
+   if(f==='addr')f=(!cur&&!A.alamat)?'alamat':'ad';
+   if(f==='nama'&&A.nama&&cur)f='pn';
+   if(CF.includes(f)){if(!cur||(f==='pn'?cur.pn!==undefined:cur[f]!==undefined))newC();cur[f]=m.v;last={o:cur,k:f,c:f==='ad'||f==='masa'}}
+   else if(!A[f]){A[f]=m.v;last={o:A,k:f,c:f==='alamat'}}else last=null;
+   continue}
+  if(last){
+   if(last.c&&(!m||last.k==='masa')){last.o[last.k]+=(last.o[last.k]?' ':'')+line;continue}
+   if(!last.o[last.k]&&!m){last.o[last.k]=line;last=null}}}
+ const nv=String(A.nen||'').replace(/\D/g,''),nen=nv.length>=4?fmtN(nv):'',namaRaw=String(A.nama||'').replace(/\s+/g,' ').trim(),
+  lt=String(A.lahir||'').trim(),ld=pDate(lt),pg=String(A.pulang||'').trim(),pd=pDate(pg);
+ let al=String(A.alamat||''),zv=(al.match(ZR)||[''])[0];al=al.replace(ZR,'');
+ if(!zv){const m2=al.match(/^\s*(\d{3}-\d{4})(?!\d)/);if(m2){zv='〒'+m2[1];al=al.replace(m2[0],'')}}
+ const au=al.replace(/\s*\n\s*/g,' ').replace(/\s*,\s*/g,', ').replace(/\s+/g,' ').trim().toUpperCase(),aj=CJK.test(au);
+ return{nen,nama:namaRaw.toUpperCase(),namaRaw,lahir:ld?fd(ld):lt,alamat:au,alamatRo:aj?'':au,alamatJp:aj?au:'',alamatM:aj?'jp':'ro',zip:fixZ(zv),
+  pulang:pd?fd(pd):(pg||'2024 年 12 月 16 日'),ks:(C.length?C:[{}]).map(mkC)}}
 // ====== TEMPLATE ======
 const mk=(k,x,y,w,h,s,o)=>({k,x,y,w,h,ox:x,oy:y,s,f:'t',z:14,c:'#000000',b:0,i:0,tx:0,ty:0,al:'l',bd:0,m:0,...o});
 const addr=d=>d.alamat+(d.zip?'\n'+d.zip:'');
@@ -248,8 +284,9 @@ function setF(g,f,v,internal){const d=S.k[g].d;d[f]=v;
 function applyAddr(g,key){const d=S.k[g].d,[R,J,M]=AK[key];let t=d[M]=='jp'?d[J]:d[R];
  if(key=='ad'){const z=(d.ad.match(ZE)||[''])[0].replace(/\s/g,'');t=t+(z?'\n'+z:'')}setF(g,key,t,true)}
 async function swAddr(g,key,m){const d=S.k[g].d;ens(d,g);const[R,J,M]=AK[key];
- if(m=='jp'&&!d[J]&&d[R]){await detect([g],false,key);if(d[M]=='jp')return;if(!d[J])d[J]=d[R]}
- if(m=='ro'&&!d[R])note('Versi romaji masih kosong, silakan ketik.');
+ if(m=='jp'&&!d[J]&&d[R]){await detect([g],false,key,'jp');if(d[M]=='jp')return;if(!d[J])d[J]=d[R]}
+ if(m=='ro'&&!d[R]&&d[J]){await detect([g],false,key,'ro');if(d[M]=='ro')return}
+ if(m=='ro'&&!d[R])note('Versi romaji tidak ditemukan di Excel, silakan ketik.');
  d[M]=m;applyAddr(g,key);renderParams()}
 $('#pp').addEventListener('input',e=>{const t=e.target;if(t.dataset.f)setF(+t.dataset.g,t.dataset.f,t.value)});
 $('#pp').addEventListener('click',e=>{const b=e.target.closest('[data-dk]');if(b)delK(+b.dataset.dk);const z=e.target.closest('[data-dz]');if(z)detect([+z.dataset.dz],true);
@@ -260,8 +297,14 @@ const SW1=new Set(['ken','to','fu']),SW2=new Set(['shi','ku','gun','machi','cho'
 function names(t,SW){const w=String(t).toLowerCase().replace(/\(.*?\)/g,'').split(/[^a-z]+/).filter(Boolean),v=[NZ(w.join(''))];
  while(w.length>1&&SW.has(w[w.length-1]))w.pop();v.push(NZ(w.join('')));const gi=w.lastIndexOf('gun');if(gi>=0&&gi<w.length-1)v.push(NZ(w.slice(gi+1).join('')));
  return[...new Set(v)].filter(x=>x.length>=3)}
-function zipBuild(rows){const P=new Map(),nc=new Map();
- for(const r of rows){const ro=r&&r[3];if(!ro||!/^\d{3}-\d{4}$/.test(String(r[0])))continue;const pt=String(ro).split(', ');if(pt.length<3)continue;
+// indeks Jepang -> romaji: kota -> {pref, kota romaji, daftar area}
+const nj=s=>String(s).replace(/ヶ/g,'ケ').replace(/ヵ/g,'カ').replace(/髙/g,'高').replace(/﨑/g,'崎').replace(/[邊邉]/g,'辺');
+function jAdd(J,r,pt){const z=String(r[0]),ar=nj(r[1]),j=nj(r[2]),isC=ar.includes('以下に掲載がない場合'),cj=isC?j:(ar&&j.endsWith(ar)?j.slice(0,-ar.length):j);
+ let c=J.get(cj);if(!c){c={pf:pt[pt.length-1],ci:pt[Math.max(0,pt.length-2)],rows:[],z:null};J.set(cj,c)}
+ if(isC){c.z=z;return}if(!c.z)c.z=z;
+ const ab=j.slice(cj.length).replace(/（[^）]*）/g,'');if(ab)c.rows.push([ab,pt.slice(0,-2).join(', ').replace(/\(.*?\)/g,'').trim(),z])}
+function zipBuild(rows){const P=new Map(),nc=new Map(),J=new Map();P.J=J;
+ for(const r of rows){const ro=r&&r[3];if(!ro||!/^\d{3}-\d{4}$/.test(String(r[0])))continue;const pt=String(ro).split(', ');jAdd(J,r,pt);if(pt.length<3)continue;
   const pf=pt[pt.length-1],ct=pt[pt.length-2],ar=NZ(pt.slice(0,-2).join(', '));let p=P.get(pf);if(!p){p={v:names(pf,SW1),c:new Map(),raw:pf};P.set(pf,p)}
   let c=p.c.get(ct);if(!c){c={v:names(ct,SW2),rows:[],raw:ct};p.c.set(ct,c)}c.rows.push([ar,r[0],r[2],String(r[1]).includes('以下に掲載がない場合'),String(r[1])])}
  return P}
@@ -294,23 +337,42 @@ function zipConv(P,text){const r=zipFind(P,text);if(!r)return null;const L=wrd(t
  const base=r.j.replace(/（[^）]*）/g,'').replace(/\s+/g,''),num=L.slice(0,i).map(cvN).join(''),bld=L.slice(i).join(' ').toUpperCase();
  return{...r,part:!ok,rem:bld,jp:base+num+(bld?' '+bld:'')}}
 const pn_=r=>r.conf=='kota'?' Area belum ketemu di Excel, sisanya tetap romaji.':r.part?' Bagian sisa tidak terpisah rapi, mohon cek.':r.rem?` Sisa "${r.rem}" (nama gedung/blok) tidak ada di Excel, dibiarkan romaji, edit manual bila perlu.`:'';
-function procA(P,d,m,force){const ro=d.alamatRo;
- if(!ro){m.push(d.alamat?'Alamat di Jepang: sudah berbahasa Jepang.':'Alamat di Jepang kosong.');return}
+// Jepang -> romaji (arah sebaliknya): provinsi, kota, area dari Excel; nomor jadi romaji (丁目 -> CHOME dst), sisa teks dibiarkan
+function zipRev(P,text){const J=P.J;if(!J)return null;
+ const A=String(text).replace(ZR,'').replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-65248)).trim(),C=nj(A.replace(/\s/g,''));
+ let bk=null;for(const k of J.keys())if(C.startsWith(k)&&(!bk||k.length>bk.length))bk=k;if(!bk)return null;
+ const c=J.get(bk),rest=C.slice(bk.length);let ar=null;
+ for(const r of c.rows)if(rest.startsWith(r[0])&&(!ar||r[0].length>ar[0].length))ar=r;
+ const used=bk.length+(ar?ar[0].length:0);let n=0,i=0;while(i<A.length&&n<used){if(!/\s/.test(A[i]))n++;i++}
+ let rem=A.slice(i).trim();const m=rem.match(/^[\d\-－ー丁目番地号]+/);let num='';
+ if(m){num=m[0].replace(/ー|－/g,'-').replace(/(\d+)丁目/g,'$1-CHOME ').replace(/(\d+)番地/g,'$1-BANCHI ').replace(/(\d+)番/g,'$1-BAN ').replace(/(\d+)号/g,'$1-GO ').replace(/\s+/g,' ').trim();rem=rem.slice(m[0].length).trim()}
+ return{ro:[c.pf,c.ci,ar&&ar[1]].filter(Boolean).join(', ')+(num?' '+num:'')+(rem?' '+rem:''),z:ar?ar[2]:c.z,conf:ar?'area':'kota',rem}}
+const rvn=r=>r.conf=='kota'?' Area belum ketemu di Excel, bagian itu tetap Jepang.':r.rem?` Sisa "${r.rem}" tidak ada di Excel, dibiarkan Jepang, edit manual bila perlu.`:'';
+function procA(P,d,m,force,want){const ro=d.alamatRo;
+ if(!ro){const jp=d.alamatJp||d.alamat;if(!jp){m.push('Alamat di Jepang kosong.');return}
+  const rv=zipRev(P,jp);if(!rv){m.push('Alamat di Jepang: tidak ditemukan di Excel, versi romaji belum bisa dibuat.');return}
+  d.alamatJp=jp;d.alamatRo=rv.ro;if(want=='ro'){d.alamatM='ro';applyAddr(0,'alamat')}
+  const setz=force||!d.zip;if(setz)setF(0,'zip','〒'+rv.z);
+  m.push(`Alamat di Jepang: versi romaji ${rv.ro}${setz?` (〒${rv.z}, ${cf(rv)})`:''}.${rvn(rv)}`);return}
  const r=zipConv(P,ro);if(!r){m.push('Alamat di Jepang: tidak ditemukan di Excel, isi manual.');return}
  d.alamatJp=r.jp;d.alamatM='jp';applyAddr(0,'alamat');
  const setz=force||!d.zip;if(setz)setF(0,'zip','〒'+r.z);
  m.push(`Alamat di Jepang: ${r.jp} ${setz?`(〒${r.z}, ${cf(r)})`:'(kode pos lama dipertahankan)'}.${pn_(r)}`)}
-function procK(P,g,d,m,force){const ro=d.adRo,hz=hasZ(d.ad),oz=(d.ad.match(ZE)||[''])[0].replace(/\s/g,'');
- if(!ro){m.push(adBase(d.ad)?'Alamat perusahaan: sudah berbahasa Jepang'+(hz?'.':', kode pos belum ada, isi manual.'):'Alamat perusahaan kosong.');return}
+function procK(P,g,d,m,force,want){const ro=d.adRo,hz=hasZ(d.ad),oz=(d.ad.match(ZE)||[''])[0].replace(/\s/g,'');
+ if(!ro){const jp=d.adJp||adBase(d.ad);if(!jp){m.push('Alamat perusahaan kosong.');return}
+  const rv=zipRev(P,jp);if(!rv){m.push('Alamat perusahaan: tidak ditemukan di Excel, versi romaji belum bisa dibuat'+(hz?'.':', kode pos belum ada, isi manual.'));return}
+  const setz=!hz||(force&&rv.conf=='area'),z=setz?'〒'+rv.z:oz;d.adJp=jp;d.adRo=rv.ro;if(want=='ro')d.adM='ro';
+  setF(g,'ad',(d.adM=='ro'?d.adRo:d.adJp)+(z?'\n'+z:''),true);
+  m.push(`Alamat perusahaan: versi romaji ${rv.ro} ${setz?`(〒${rv.z}, ${cf(rv)})`:'(kode pos dari pesan dipertahankan)'}.${rvn(rv)}`);return}
  const r=zipConv(P,ro);if(!r){m.push('Alamat perusahaan: tidak ditemukan di Excel, isi manual.');return}
  const setz=!hz||(force&&r.conf=='area'),z=setz?'〒'+r.z:oz;
  d.adJp=r.jp;d.adM='jp';setF(g,'ad',r.jp+(z?'\n'+z:''),true);
  m.push(`Alamat perusahaan: ${r.jp} ${setz?`(〒${r.z}, ${cf(r)})`:'(kode pos dari pesan dipertahankan)'}.${pn_(r)}`)}
-async function detect(gs,force,only){
+async function detect(gs,force,only,want){
  await busy('Mendeteksi kode pos dan alamat…',async set=>{try{const P=await loadZip(set);
   for(const g of gs){const d=S.k[g]&&S.k[g].d;if(!d)continue;ens(d,g);const m=[];
-   if(g===0&&only!='ad')procA(P,d,m,force);
-   if(only!='alamat')procK(P,g,d,m,force);
+   if(g===0&&only!='ad')procA(P,d,m,force,want);
+   if(only!='alamat')procK(P,g,d,m,force,want);
    ZM[g]=m}
  }catch(e){gs.forEach(g=>ZM[g]=['Gagal deteksi: '+e.message])}});renderParams()}
 // ====== PREVIEW ======
