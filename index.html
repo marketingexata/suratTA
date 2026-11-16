@@ -141,7 +141,7 @@ const ZIPFILE='Kode_Pos_dan_Alamat_Jepang.xlsx'; // file Excel di folder yang sa
 // ========================
 const $=s=>document.querySelector(s),W=794,H=1123,K='nenkin_v2_',sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const F={t:"'Times New Roman','Noto Serif JP','MS Mincho',serif",a:"Arial,'Noto Sans JP',sans-serif",m:"'Noto Serif JP','MS Mincho',serif"},FN={t:'Times New Roman',a:'Arial',m:'MS Mincho'};
-let S={k:{},pages:[]},sel=null,sc=1,edit=true,tm,ct,dr=null,lw=0,U=null,TK=null,ZM={},ZD=null,dirty=false;
+let S={k:{},pages:[]},sel=null,sc=1,edit=true,tm,ct,dr=null,lw=0,U=null,TK=null,ZM={},ZD=null,dirty=false,FLIP=false;
 let UH=[],RH=[],last='',lt=0,gd=null,mode='k',gv=1,mt0;const sn={k:1,t:1,g:1},lk={t:0,x:0};
 const T=()=>sel&&S.pages[sel.p]&&S.pages[sel.p].items[sel.i];
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
@@ -279,7 +279,11 @@ function renderParams(){$('#pp').innerHTML=Object.keys(S.k).sort().map(gs=>{cons
 function keepFocus(fn){const a=document.activeElement,k=a&&a.dataset&&a.dataset.f?{g:a.dataset.g,f:a.dataset.f,s:a.selectionStart,e:a.selectionEnd}:null;fn();
  if(k){const n=document.querySelector(`#pp [data-g="${k.g}"][data-f="${k.f}"]`);if(n){n.focus();try{n.setSelectionRange(k.s,k.e)}catch(e){}}}}
 function setF(g,f,v,internal){const d=S.k[g].d;d[f]=v;
- if(!internal&&AK[f]){ens(d,g);const[R,J,M]=AK[f],b=f=='ad'?adBase(v):v;if(d[M]=='jp')d[J]=b;else d[R]=b;d[f+'St']=d[M]=='jp'?'ro':'jp'}
+ if(!internal&&AK[f]){ens(d,g);const[R,J,M]=AK[f],b=f=='ad'?adBase(v):v,cj=CJK.test(b),lt=(b.match(/[A-Za-z]/g)||[]).length;let mm=d[M];
+  if(mm=='ro'&&cj)mm='jp';else if(mm=='jp'&&!cj&&lt>=3)mm='ro';
+  if(mm!=d[M]){d[M]=mm;FLIP=true}
+  let nb=b;if(f=='alamat'&&ZR.test(b)){d.zip=fixZ((b.match(ZR)||[''])[0].replace(/\s/g,''));nb=b.replace(ZR,'').trim();d[f]=nb;FLIP=true}
+  if(mm=='jp')d[J]=nb;else d[R]=nb;d[f+'St']=mm=='jp'?'ro':'jp'}
  if(f=='nen'&&g===0&&nenToggle(String(v).replace(/\D/g,'').length>0)){keepFocus(()=>{const y=scrollY;render();scrollTo(0,y)});save();return}
  const key=MA[f]||`g${g}.${MC[f]}`;
  S.pages.forEach((p,pi)=>p.items.forEach((t,i)=>{if(t.k===key){t.s=MA[f]&&(f=='alamat'||f=='zip')?addr(d):f=='nen'?fmtN(v):v;const x=document.querySelector(`.it[data-p="${pi}"][data-i="${i}"] .tx`);if(x)x.textContent=t.s}}));save()}
@@ -291,7 +295,7 @@ async function swAddr(g,key,m){const d=S.k[g].d;ens(d,g);const[R,J,M]=AK[key],T=
   if(!d[T]&&m=='jp')d[T]=d[O];
   if(!d[T])note('Versi '+(m=='ro'?'romaji':'Jepang')+' tidak ditemukan di Excel, silakan ketik.');else if(stale)note('Alamat ini tidak ditemukan di Excel, yang tampil versi lama. Silakan edit manual.')}
  d[M]=m;applyAddr(g,key);renderParams()}
-$('#pp').addEventListener('input',e=>{const t=e.target;if(t.dataset.f)setF(+t.dataset.g,t.dataset.f,t.value)});
+$('#pp').addEventListener('input',e=>{const t=e.target;if(t.dataset.f){setF(+t.dataset.g,t.dataset.f,t.value);if(FLIP){FLIP=false;keepFocus(renderParams)}}});
 $('#pp').addEventListener('click',e=>{const b=e.target.closest('[data-dk]');if(b)delK(+b.dataset.dk);const z=e.target.closest('[data-dz]');if(z)detect([+z.dataset.dz],true);
  const w=e.target.closest('[data-sg]');if(w)swAddr(+w.dataset.sg,w.dataset.sk,w.dataset.sm);
  const c=e.target.closest('[data-co]');if(c)cekOnline(+c.dataset.co,c.dataset.ck)});
@@ -317,6 +321,9 @@ function pickRow(rs,ch,fl,ri,sub,si){if(rs.length==1)return rs[0];if(sub){const 
  if(fl!=null){const a=rs.find(x=>m(x)&&In(m(x).fl,fl));if(a)return a}
  return rs.find(x=>!m(x))||rs.find(x=>m(x)&&m(x).other)||rs[0]}
 const kn=s=>{const d='〇一二三四五六七八九';let n=0,t=0;for(const c of s){if(c=='十'){n+=(t||1)*10;t=0}else t=d.indexOf(c)}return String(n+t)};
+// alamat tertempel dua kali (awal yang sama diulang): ambil yang pertama saja
+function cutDup(t){const T=String(t);let C='';const pos=[];for(let i=0;i<T.length;i++){if(!/\s/.test(T[i])){C+=T[i].toUpperCase();pos.push(i)}}
+ const n=Math.min(20,Math.floor(C.length/2));if(n<6)return T;const j=C.indexOf(C.slice(0,n),n);return j>0?T.slice(0,pos[j]).trim():T}
 const KB={ア:'a',イ:'i',ウ:'u',エ:'e',オ:'o',カ:'ka',キ:'ki',ク:'ku',ケ:'ke',コ:'ko',ガ:'ga',ギ:'gi',グ:'gu',ゲ:'ge',ゴ:'go',サ:'sa',シ:'shi',ス:'su',セ:'se',ソ:'so',ザ:'za',ジ:'ji',ズ:'zu',ゼ:'ze',ゾ:'zo',タ:'ta',チ:'chi',ツ:'tsu',テ:'te',ト:'to',ダ:'da',ヂ:'ji',ヅ:'zu',デ:'de',ド:'do',ナ:'na',ニ:'ni',ヌ:'nu',ネ:'ne',ノ:'no',ハ:'ha',ヒ:'hi',フ:'fu',ヘ:'he',ホ:'ho',バ:'ba',ビ:'bi',ブ:'bu',ベ:'be',ボ:'bo',パ:'pa',ピ:'pi',プ:'pu',ペ:'pe',ポ:'po',マ:'ma',ミ:'mi',ム:'mu',メ:'me',モ:'mo',ヤ:'ya',ユ:'yu',ヨ:'yo',ラ:'ra',リ:'ri',ル:'ru',レ:'re',ロ:'ro',ワ:'wa',ヲ:'o',ン:'n',ヴ:'vu',ヰ:'i',ヱ:'e',ヮ:'wa',ヵ:'ka',ヶ:'ke',ァ:'a',ィ:'i',ゥ:'u',ェ:'e',ォ:'o'},
 KS={キャ:'kya',キュ:'kyu',キョ:'kyo',シャ:'sha',シュ:'shu',ショ:'sho',チャ:'cha',チュ:'chu',チョ:'cho',ニャ:'nya',ニュ:'nyu',ニョ:'nyo',ヒャ:'hya',ヒュ:'hyu',ヒョ:'hyo',ミャ:'mya',ミュ:'myu',ミョ:'myo',リャ:'rya',リュ:'ryu',リョ:'ryo',ギャ:'gya',ギュ:'gyu',ギョ:'gyo',ジャ:'ja',ジュ:'ju',ジョ:'jo',ヂャ:'ja',ビャ:'bya',ビュ:'byu',ビョ:'byo',ピャ:'pya',ピュ:'pyu',ピョ:'pyo',シェ:'she',ジェ:'je',チェ:'che',ティ:'ti',トゥ:'tu',ディ:'di',ドゥ:'du',デュ:'dyu',テュ:'tyu',ファ:'fa',フィ:'fi',フェ:'fe',フォ:'fo',フュ:'fyu',ウィ:'wi',ウェ:'we',ウォ:'wo',ヴァ:'va',ヴィ:'vi',ヴェ:'ve',ヴォ:'vo',イェ:'ye',クァ:'kwa',クィ:'kwi',クェ:'kwe',クォ:'kwo',グァ:'gwa',ツァ:'tsa',ツィ:'tsi',ツェ:'tse',ツォ:'tso',スィ:'si',ズィ:'zi'};
 // katakana (nama gedung dst) -> romaji huruf besar; kanji dibiarkan
@@ -381,7 +388,7 @@ const adBase=a=>String(a||'').replace(/\n?〒\s*\d{3}-?\d{4}\s*$/,'').trim(),has
 const wrd=s=>String(s).replace(/([a-zA-Z])-(?=[a-zA-Z])/g,'$1 ').split(/[\s,，]+/).filter(Boolean),
  isN=t=>/^\d[\d\-]*(?:-?(?:chome|banchi|ban|go))?[\d\-]*$/i.test(t),
  cvN=t=>t.replace(/(\d+)-?chome/ig,'$1丁目').replace(/(\d+)-?banchi/ig,'$1番地').replace(/(\d+)-?ban/ig,'$1番').replace(/(\d+)-?go\b/ig,'$1号');
-function zipConv(P,text){const f=zipFind(P,text);if(!f)return null;const fl=((String(text).match(/(\d+)\s*(?:f\b|階|-?kai\b)/i))||[])[1],
+function zipConv(P,text){text=cutDup(text);const f=zipFind(P,text);if(!f)return null;const fl=((String(text).match(/(\d+)\s*(?:f\b|階|-?kai\b)/i))||[])[1],
  K=new Map();for(const x of f.c.rows){if(x[3]||!x[5])continue;if(!K.has(x[5]))K.set(x[5],[]);K.get(x[5]).push(x)}
  const keys=[...K.keys()];let L,hit=null;
  for(const last of[0,1]){L=wrd(text);
@@ -395,9 +402,10 @@ function zipConv(P,text){const f=zipFind(P,text);if(!f)return null;const fl=((St
  const ch=i?+(L[0].match(/^\d+/)||[null])[0]:null,row=pickRow(K.get(hit.k),ch,fl==null?null:+fl,6,NZd(L.join('')),7),
  base=row[2].replace(/（[^）]*）/g,'').replace(/\s+/g,''),num=L.slice(0,i).map(cvN).join(''),bt=L.slice(i).map(roKataTok),bld=L.slice(i).join(' ').toUpperCase(),jb=bt.map(x=>x.t).join(' ');
  return{z:row[1],j:row[2],conf:'area',ar:row,pw:f.pw,cw:f.cw,cj:f.cj,part:false,rem:bld,kana:bt.some(x=>x.k),jp:base+num+(jb?' '+jb:'')}}
+const zdiff=(d,z)=>d.zip&&z&&d.zip.replace(/\D/g,'')!=String(z).replace(/\D/g,'')?` Catatan: kode pos di kolom (${d.zip}) beda dengan Excel (〒${z}), klik "Deteksi kode pos" untuk menimpa.`:'';
 const pn_=r=>r.conf=='kota'?' Area belum ketemu di Excel, sisanya tetap romaji.':r.part?' Bagian sisa tidak terpisah rapi, mohon cek.':r.kana?` Nama gedung/blok "${r.rem}" diubah ke katakana perkiraan dari ejaan romaji, mohon dicek.`:r.rem?` Sisa "${r.rem}" (nama gedung/blok) tidak ada di Excel, dibiarkan romaji, edit manual bila perlu.`:'';
 // Jepang -> romaji (arah sebaliknya): provinsi, kota, area dari Excel; nomor jadi romaji (丁目 -> CHOME dst), sisa teks dibiarkan
-function zipRev(P,text){const J=P.J;if(!J)return null;
+function zipRev(P,text){const J=P.J;if(!J)return null;text=cutDup(text);
  const A=f2h(String(text).replace(ZR,'')).replace(/[－−‐‑–—]/g,'-').replace(/([〇一二三四五六七八九十]+)(?=丁目)/g,k=>kn(k)).trim(),C=nj(A.replace(/\s/g,''));
  let bk=null;for(const k of J.keys())if(C.startsWith(k)&&(!bk||k.length>bk.length))bk=k;if(!bk)return null;
  const c=J.get(bk),rest=C.slice(bk.length);let bl=0;
@@ -415,11 +423,11 @@ function procA(P,d,m,force,want){const ro=d.alamatRo,dir=want||(d.alamatSt=='ro'
   const rv=zipRev(P,jp);if(!rv){m.push('Alamat di Jepang: tidak ditemukan di Excel, versi romaji belum bisa dibuat.');return}
   d.alamatJp=jp;d.alamatRo=rv.ro;d.alamatSt='';if(want=='ro'){d.alamatM='ro';applyAddr(0,'alamat')}
   const setz=force||!d.zip;if(setz)setF(0,'zip','〒'+rv.z);
-  m.push(`Alamat di Jepang: versi romaji ${rv.ro}${setz?` (〒${rv.z}, ${cf(rv)})`:''}.${rvn(rv)}`);return}
+  m.push(`Alamat di Jepang: versi romaji ${rv.ro}${setz?` (〒${rv.z}, ${cf(rv)})`:''}.${rvn(rv)}${setz?'':zdiff(d,rv.z)}`);return}
  const r=zipConv(P,ro);if(!r){m.push('Alamat di Jepang: tidak ditemukan di Excel, isi manual.');return}
  d.alamatJp=r.jp;d.alamatSt='';d.alamatM='jp';applyAddr(0,'alamat');
  const setz=force||!d.zip;if(setz)setF(0,'zip','〒'+r.z);
- m.push(`Alamat di Jepang: ${r.jp} ${setz?`(〒${r.z}, ${cf(r)})`:'(kode pos lama dipertahankan)'}.${pn_(r)}`)}
+ m.push(`Alamat di Jepang: ${r.jp} ${setz?`(〒${r.z}, ${cf(r)})`:'(kode pos lama dipertahankan)'}.${pn_(r)}${setz?'':zdiff(d,r.z)}`)}
 function procK(P,g,d,m,force,want){const ro=d.adRo,hz=hasZ(d.ad),oz=(d.ad.match(ZE)||[''])[0].replace(/\s/g,''),dir=want||(d.adSt=='ro'?'ro':(ro?'jp':'ro'));
  if(dir=='ro'){const jp=d.adJp||adBase(d.ad);if(!jp){m.push('Alamat perusahaan kosong.');return}
   const rv=zipRev(P,jp);if(!rv){m.push('Alamat perusahaan: tidak ditemukan di Excel, versi romaji belum bisa dibuat'+(hz?'.':', kode pos belum ada, isi manual.'));return}
