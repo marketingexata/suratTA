@@ -302,7 +302,7 @@ $('#pp').addEventListener('click',e=>{const b=e.target.closest('[data-dk]');if(b
 // tombol Cek online: popup Google Search berisi alamat yang tertulis di kolom parameter
 function cekOnline(g,k){const d=S.k[g].d;let a=String(d[k]||'').replace(/\s+/g,' ').trim();if(k=='alamat'&&d.zip&&!hasZ(a))a+=' '+d.zip;
  if(!a){note('Alamat masih kosong, isi dulu lalu klik Cek online.');return}
- const q='cari dan temukan alamat asli dan lengkap dengan nomor dan kode posnya di negara jepang dari alamat ('+a+')',
+ const q='cari dan temukan alamat asli dan lengkap dengan nomor dan kode posnya di negara jepang dari alamat ('+a+') dalam bentuk romaji dan jepang yang masing masing siap di copy paste',
   u='https://www.google.com/search?q='+encodeURIComponent(q),W=Math.min(980,screen.availWidth-40),H=Math.min(760,screen.availHeight-60),
   w=window.open(u,'cekOnlineAlamat','popup=yes,width='+W+',height='+H+',left='+Math.max(0,(screen.availWidth-W)/2)+',top='+Math.max(0,(screen.availHeight-H)/2)+',scrollbars=yes,resizable=yes');
  if(!w){window.open(u,'_blank');note('Popup diblokir browser, dibuka di tab baru.')}else w.focus()}
