@@ -74,6 +74,9 @@ fieldset{border:0;padding:0;margin:0}fieldset:disabled{opacity:.45}
 .hg .gl,.hg .rl,.nx .gl,.nx .rl{display:none!important}
 .fh{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .fld .sw{display:inline-flex;flex:none}
+.swr{display:inline-flex;align-items:center;gap:6px;flex:none}
+.co{border:1px solid var(--ac);background:var(--cd);color:var(--ac);border-radius:7px;padding:2px 9px;font:inherit;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
+.co:hover{background:var(--ac);color:#fff}
 .sw button{border:1px solid var(--bd);background:var(--cd);color:var(--tx);padding:2px 9px;font:inherit;font-size:11px;font-weight:600;cursor:pointer}
 .sw button:first-child{border-radius:7px 0 0 7px;border-right:0}.sw button:last-child{border-radius:0 7px 7px 0}
 .sw button.on{background:var(--ac);border-color:var(--ac);color:#fff}
@@ -134,7 +137,7 @@ fieldset{border:0;padding:0;margin:0}fieldset:disabled{opacity:.45}
 <script>
 // ====== PENGATURAN ======
 const API='https://script.google.com/macros/s/AKfycbzNjo5VfALF7Vb72PNYS-yycwI6A4BLv0E8J4Yfb-7ithvF__WZSuX86QxwsTCWjL8Sng/exec';                                   // tempel URL Web App Apps Script di sini (lihat Kode.gs)
-const ZIPFILE='Kode_Pos_Ringan.xlsx'; // file Excel di folder yang sama (GitHub Pages)
+const ZIPFILE='Kode_Pos_dan_Alamat_Jepang.xlsx'; // file Excel di folder yang sama (GitHub Pages)
 // ========================
 const $=s=>document.querySelector(s),W=794,H=1123,K='nenkin_v2_',sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const F={t:"'Times New Roman','Noto Serif JP','MS Mincho',serif",a:"Arial,'Noto Sans JP',sans-serif",m:"'Noto Serif JP','MS Mincho',serif"},FN={t:'Times New Roman',a:'Arial',m:'MS Mincho'};
@@ -269,7 +272,7 @@ const AK={alamat:['alamatRo','alamatJp','alamatM'],ad:['adRo','adJp','adM']};
 function ens(d,g){for(const k of(g===0?['alamat','ad']:['ad'])){const[R,J,M]=AK[k];if(d[M]!==undefined)continue;const t=k=='ad'?adBase(d.ad):d[k];
  if(t&&CJK.test(t)){d[R]='';d[J]=t;d[M]='jp'}else{d[R]=t||'';d[J]='';d[M]='ro'}}}
 function renderParams(){$('#pp').innerHTML=Object.keys(S.k).sort().map(gs=>{const g=+gs,d=S.k[g].d;ens(d,g);
- const f=(g?FC:[...FA,...FC]).map(([k,l,t])=>{const a=AK[k],sw=a?`<span class="sw"><button type="button" class="${d[a[2]]!='jp'?'on':''}" data-sg="${g}" data-sk="${k}" data-sm="ro">Romaji</button><button type="button" class="${d[a[2]]=='jp'?'on':''}" data-sg="${g}" data-sk="${k}" data-sm="jp">日本語</button></span>`:'',
+ const f=(g?FC:[...FA,...FC]).map(([k,l,t])=>{const a=AK[k],sw=a?`<span class="swr"><button type="button" class="co" data-co="${g}" data-ck="${k}" title="Buka Google di popup untuk cari alamat lengkap + kode pos">🔍 Cek online</button><span class="sw"><button type="button" class="${d[a[2]]!='jp'?'on':''}" data-sg="${g}" data-sk="${k}" data-sm="ro">Romaji</button><button type="button" class="${d[a[2]]=='jp'?'on':''}" data-sg="${g}" data-sk="${k}" data-sm="jp">日本語</button></span></span>`:'',
   inp=t?`<textarea rows="2" data-g="${g}" data-f="${k}">${esc(d[k]||'')}</textarea>`:`<input data-g="${g}" data-f="${k}" value="${esc(d[k]||'')}">`;
   return sw?`<div class="fld"><div class="fh"><span>${l}</span>${sw}</div>${inp}</div>`:`<label class="fld"><span>${l}</span>${inp}</label>`}).join('');
  return`<div class="pk"><div class="row"><b>Kaisha ${g+1}</b><button class="bt g sm" data-dz="${g}" title="Cari kode pos dan ubah alamat romaji ke bahasa Jepang">Deteksi kode pos</button>${g?`<button class="bt g sm" data-dk="${g}">Hapus</button>`:''}</div><p class="hint">${(ZM[g]||[]).map(esc).join('<br>')}</p>${f}</div>`}).join('')}
@@ -290,7 +293,15 @@ async function swAddr(g,key,m){const d=S.k[g].d;ens(d,g);const[R,J,M]=AK[key];
  d[M]=m;applyAddr(g,key);renderParams()}
 $('#pp').addEventListener('input',e=>{const t=e.target;if(t.dataset.f)setF(+t.dataset.g,t.dataset.f,t.value)});
 $('#pp').addEventListener('click',e=>{const b=e.target.closest('[data-dk]');if(b)delK(+b.dataset.dk);const z=e.target.closest('[data-dz]');if(z)detect([+z.dataset.dz],true);
- const w=e.target.closest('[data-sg]');if(w)swAddr(+w.dataset.sg,w.dataset.sk,w.dataset.sm)});
+ const w=e.target.closest('[data-sg]');if(w)swAddr(+w.dataset.sg,w.dataset.sk,w.dataset.sm);
+ const c=e.target.closest('[data-co]');if(c)cekOnline(+c.dataset.co,c.dataset.ck)});
+// tombol Cek online: popup Google Search berisi alamat yang tertulis di kolom parameter
+function cekOnline(g,k){const d=S.k[g].d;let a=String(d[k]||'').replace(/\s+/g,' ').trim();if(k=='alamat'&&d.zip&&!hasZ(a))a+=' '+d.zip;
+ if(!a){note('Alamat masih kosong, isi dulu lalu klik Cek online.');return}
+ const q='cari dan temukan alamat asli dan lengkap dengan nomor dan kode posnya di negara jepang dari alamat ('+a+')',
+  u='https://www.google.com/search?q='+encodeURIComponent(q),W=Math.min(980,screen.availWidth-40),H=Math.min(760,screen.availHeight-60),
+  w=window.open(u,'cekOnlineAlamat','popup=yes,width='+W+',height='+H+',left='+Math.max(0,(screen.availWidth-W)/2)+',top='+Math.max(0,(screen.availHeight-H)/2)+',scrollbars=yes,resizable=yes');
+ if(!w){window.open(u,'_blank');note('Popup diblokir browser, dibuka di tab baru.')}else w.focus()}
 // ====== KODE POS ======
 const NZ=s=>String(s).toLowerCase().replace(/\(.*?\)/g,'').replace(/[^a-z]/g,'').replace(/oh/g,'o').replace(/ou|oo/g,'o').replace(/uu/g,'u');
 const SW1=new Set(['ken','to','fu']),SW2=new Set(['shi','ku','gun','machi','cho','mura','son']);
@@ -322,7 +333,10 @@ async function loadZip(set){if(ZD)return ZD;
  for(;;){const{done,value}=await rd.read();if(done)break;ch.push(value);n+=value.length;if(L)await set(Math.min(55,Math.round(n/L*55)))}
  const buf=new Uint8Array(n);let o=0;ch.forEach(c=>{buf.set(c,o);o+=c.length});await set(60);await sleep(30);
  const wb=XLSX.read(buf,{type:'array',sheets:'Wilayah'});await set(80);
- const rows=XLSX.utils.sheet_to_json(wb.Sheets['Wilayah'],{header:1,raw:true});await set(90);ZD=zipBuild(rows);return ZD}
+ const raw=XLSX.utils.sheet_to_json(wb.Sheets['Wilayah'],{header:1,raw:true});await set(85);
+ let hi=raw.findIndex(r=>r&&String(r[0]).trim()=='Kode pos');if(hi<0)hi=6;const H=(raw[hi]||[]).map(x=>String(x||'').trim()),ix=n=>{const i=H.indexOf(n);return i<0?-1:i},
+ cZ=ix('Kode pos'),cA=ix('Area'),cJ=ix('Alamat Jepang'),cR=ix('Alamat romaji');if(cZ<0||cA<0||cJ<0||cR<0)throw Error('Kolom Excel tidak sesuai (butuh: Kode pos, Area, Alamat Jepang, Alamat romaji).');
+ const rows=[];for(let i=hi+1;i<raw.length;i++){const r=raw[i];if(r)rows.push([r[cZ],r[cA],r[cJ],r[cR]])}raw.length=0;await set(90);ZD=zipBuild(rows);return ZD}
 const adBase=a=>String(a||'').replace(/\n?〒\s*\d{3}-?\d{4}\s*$/,'').trim(),hasZ=a=>/〒\s*\d{3}-?\d{4}/.test(a||''),cf=r=>r.conf=='area'?'cocok sampai area':'cocok sampai kota, mohon cek ulang';
 // romaji -> Jepang: wilayah (provinsi/kota/area) dari Excel, nomor tetap angka, sisanya (nama gedung) tetap romaji
 const wrd=s=>String(s).replace(/([a-zA-Z])-(?=[a-zA-Z])/g,'$1 ').split(/[\s,，]+/).filter(Boolean),
